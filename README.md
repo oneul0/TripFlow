@@ -99,3 +99,5 @@ code-review-graph는 `.tools/crg`의 로컬 도구이며 커밋하지 않는다.
 디자인 시스템 개선 계획과 적용 내역은 docs/design-system.md를 참고한다. 내 여행은 계획·저장 코스·지역 후보 탭을 제공하며 공통 타입·행동색을 정리했다.
 
 관광 API v4.4 문서 대조 및 남은 실연동 검증: [TOUR-44](docs/tour-api-v44.md).
+
+TOUR-45: 여행지 탐색의 세부 분류는 선택 입력이며 live 모드에서 사용합니다. 샘플에는 분류 정보가 없어 비활성화됩니다. [수용 기준](specs/features/tour-classification.md)

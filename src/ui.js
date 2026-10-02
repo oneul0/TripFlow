@@ -1,4 +1,5 @@
 import {mountCourses} from './course-ui.js';
+import {mountClassification} from './classification-ui.js';
 import {areas,types} from './adapters/catalog.js';
 import {mountExplorer} from './map-explorer.js';
 import {mountRandomTrip} from './random-trip.js';
@@ -35,6 +36,7 @@ export function mountApp(root,{tour,members,mode,mapMode='sample',mapKey='',tour
  for(const brand of root.querySelectorAll('.brand'))brand.href='#home';
  const chrome=document.createElement('div');chrome.className='route-chrome';chrome.innerHTML='<nav data-breadcrumb aria-label="현재 위치"></nav><p data-route-message role="status"></p>';main.before(chrome);
  const results=root.querySelector('#results'),status=root.querySelector('#search-status'),searchForm=root.querySelector('#search-form');
+ const classification=mountClassification(searchForm,{mode});
  let request=0,controller,lastPlaces=[];
  const viewControls=document.createElement('div');viewControls.className='result-view-controls';viewControls.setAttribute('role','group');viewControls.setAttribute('aria-label','검색 결과 표시 방식');viewControls.innerHTML='<button type="button" data-result-view="list" aria-pressed="true">목록 보기</button><button type="button" data-result-view="map" aria-pressed="false">지도 보기</button>';
  searchForm.after(viewControls);const resultMeta=root.querySelector('.results-meta');viewControls.after(resultMeta);
@@ -61,14 +63,14 @@ export function mountApp(root,{tour,members,mode,mapMode='sample',mapKey='',tour
   const current=++request;controller?.abort();controller=new AbortController();
   status.textContent='여행지를 찾고 있습니다…';results.setAttribute('aria-busy','true');explorer.setQueryState('loading');
   try{
-   const data=Object.fromEntries(new FormData(searchForm));const places=await tour.find({...data,signal:controller.signal});
+   const data=Object.fromEntries(new FormData(searchForm));const places=await tour.find({...data,classification:classification.value(),signal:controller.signal});
    if(current!==request) return;
    lastPlaces=places;renderPlaces(explorer.update(lastPlaces,{area:data.area}));
   }catch(error){if(current===request&&error.name!=='AbortError'){results.replaceChildren();explorer.setQueryState('error');status.textContent=error.message||'조회하지 못했습니다. 다시 시도해주세요.';}}
   finally{if(current===request) results.setAttribute('aria-busy','false');}
  }
  searchForm.addEventListener('submit',event=>{event.preventDefault();explorer.clearSelection();search();});
- root.querySelector('#reset-search').addEventListener('click',()=>{searchForm.reset();explorer.clearSelection();search();});
+ root.querySelector('#reset-search').addEventListener('click',()=>{searchForm.reset();classification.reset();explorer.clearSelection();search();});
  const dialog=root.querySelector('#account-dialog'),panel=root.querySelector('#account-panel'),nav=root.querySelector('#account-nav');
  function renderNav(){
   let user;try{user=members.current();}catch(error){status.textContent=error.message;}

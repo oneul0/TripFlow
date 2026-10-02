@@ -167,4 +167,11 @@ dialog h2 { font-size: 26px; font-weight: 800; letter-spacing: -.8px; margin-bot
  footer { padding: 24px 20px; flex-wrap: wrap; gap: 12px; }
  footer small { width: 100%; margin-left: 0; }
 }
+.search-panel { flex-wrap: wrap; }
+.classification-filter { flex-basis: 100%; min-width: 0; }
+.classification-filter summary { cursor: pointer; padding: 8px 0; }
+.classification-fields { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; margin: 12px 0; }
+.classification-fields label { display: block; margin-bottom: 6px; }
+.classification-fields select { width: 100%; }
+@media(max-width:600px) { .classification-fields { grid-template-columns: 1fr; } }
 @media(prefers-reduced-motion:reduce) { html { scroll-behavior: auto; } *,*:before,*:after { animation: none!important; transition: none!important; } .reveal { opacity: 1; transform: none; } }

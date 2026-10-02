@@ -31,3 +31,5 @@ UX-CRS-01~04: tests/course-simplification.test.js, e2e/course-sharing.spec.js �
 DS-02 디자인 개선: docs/design-system.md에 계획·적용범위·잔여 작업 기록. tests/design-navigation.test.js로 내 여행 지역 후보 탭 검증; 전체 harness 73개 단위·DOM, 23개 E2E 통과.
 
 | TOUR-44 | 법정동 코드 변환·신분류 계약·잘못된 좌표 | tests/tour-v44.test.js, tests/catalog.test.js, tests/tour-preview.test.js | 합성 응답, live 별도 검증 |
+
+| TOUR-45 / F102 | 접힌 세부 분류·상하위 초기화·서비스 전달·샘플 안내 | tests/classification.test.js, e2e/classification.spec.js | 360/768/1440px, 외부 요청 차단 |
