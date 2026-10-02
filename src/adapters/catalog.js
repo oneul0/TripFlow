@@ -5,16 +5,17 @@ export const types={'12':'관광지','14':'문화시설','15':'공연·축제','
 export function createSampleCatalog(){return {async list({area='',type='',signal}={}) {
   signal?.throwIfAborted();return samplePlaces.filter(p=>(!area||p.areaCode===area)&&(!type||p.contentTypeId===type));
 },async preview({area='',signal}={}){signal?.throwIfAborted();const places=samplePlaces.filter(p=>p.areaCode===area);return {places:places.slice(0,20),totalCount:places.length,partial:places.length>20,mode:'sample'};}};}
-function normalize(row){
+export function normalize(row){
   if(!row.contentid||typeof row.title!=='string') throw Error('관광 API 데이터 형식이 올바르지 않습니다.');
   const lat=Number(row.mapy),lon=Number(row.mapx);
   const validCoordinates=!!row.mapy&&!!row.mapx&&Number.isFinite(lat)&&Number.isFinite(lon)&&Math.abs(lat)<=90&&Math.abs(lon)<=180;
   return {contentId:String(row.contentid),title:row.title,address:[row.addr1,row.addr2].filter(Boolean).join(' '),areaCode:internalRegions[String(row.lDongRegnCd)]??'',sigunguCode:'',legalRegionCode:String(row.lDongRegnCd??''),legalDistrictCode:String(row.lDongSignguCd??''),classification:{large:String(row.lclsSystm1??''),middle:String(row.lclsSystm2??''),small:String(row.lclsSystm3??'')},contentTypeId:String(row.contenttypeid??''),imageUrl:row.firstimage||'',latitude:validCoordinates?lat:undefined,longitude:validCoordinates?lon:undefined};
 }
 export function createTourApiCatalog({key,fetcher=fetch,pageSize=100,baseUrl='https://apis.data.go.kr/B551011/KorService2/'}) {
-  return {async preview({area,signal}={}){
+  async function page({area,type='',classification,pageNo=1,signal}={}){
+    if(!Number.isInteger(pageNo)||pageNo<1||pageNo>100000)throw Error('페이지 번호를 확인해주세요.');
     signal?.throwIfAborted();if(!areas[area])throw Error('관광정보를 조회할 시도를 선택해주세요.');
-    const url=new URL('areaBasedList2',baseUrl);url.search=new URLSearchParams({serviceKey:key,MobileOS:'ETC',MobileApp:'EnjoyTrip',_type:'json',numOfRows:'20',pageNo:'1',arrange:'A',...tourFilters({area})}).toString();
+    const url=new URL('areaBasedList2',baseUrl);url.search=new URLSearchParams({serviceKey:key,MobileOS:'ETC',MobileApp:'EnjoyTrip',_type:'json',numOfRows:'20',pageNo:String(pageNo),arrange:'A',...tourFilters({area,type,classification})}).toString();
     let response;try{response=await fetcher(url.toString(),{signal});}catch(error){if(error.name==='AbortError')throw error;throw Error('관광정보 조회에 실패했습니다. 다시 시도해주세요.');}
     if(!response.ok)throw Error('관광정보 조회에 실패했습니다. 다시 시도해주세요.');
     let data;try{data=(await response.json()).response;}catch{throw Error('관광 API 응답을 읽을 수 없습니다.');}
@@ -23,8 +24,9 @@ export function createTourApiCatalog({key,fetcher=fetch,pageSize=100,baseUrl='ht
     const rows=data.body.items?.item??[],items=Array.isArray(rows)?rows:[rows];
     if(totalCount>0&&!items.length)throw Error('관광 API 페이지 데이터가 누락되었습니다.');
     const places=[...new Map(items.map(normalize).map(p=>[p.contentId,p])).values()];
-    return {places,totalCount,partial:totalCount>places.length,mode:'live'};
-  },async list({area='',type='',classification,signal}={}) {
+    return {places,totalCount,pageNo,partial:totalCount>places.length,mode:'live'};
+  }
+  return {page,preview:filters=>page({...filters,pageNo:1}),async list({area='',type='',classification,signal}={}) {
     signal?.throwIfAborted();
     const filters=tourFilters({area,type,classification});
     const result=[];

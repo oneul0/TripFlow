@@ -33,3 +33,11 @@ DS-02 디자인 개선: docs/design-system.md에 계획·적용범위·잔여 �
 | TOUR-44 | 법정동 코드 변환·신분류 계약·잘못된 좌표 | tests/tour-v44.test.js, tests/catalog.test.js, tests/tour-preview.test.js | 합성 응답, live 별도 검증 |
 
 | TOUR-45 / F102 | 접힌 세부 분류·상하위 초기화·서비스 전달·샘플 안내 | tests/classification.test.js, e2e/classification.spec.js | 360/768/1440px, 외부 요청 차단 |
+
+| TOUR-46 / F101 / HAR-002 | 서버 키 격리·요청 검증·실연동 경로 | tests/tour-server.test.js, tests/harness-config.test.js | 실제 부산 미리보기 20건 별도 확인 |
+
+| MAP-20 / TOUR-47 | 전국 지도·대량 결과 페이지·지역 변경 | tests/national-explore.test.js, e2e/national-explore.spec.js | 부산·제주·경기 실조회 별도 확인 |
+
+| MAP-21 | 실연동 초기 지도·지역 변경 자동 조회·초기화 | tests/auto-map.test.js | 합성 응답 검증 |
+
+| MAP-22 | 지도 범위 조회·20건 이상 표시·목록 분리·늦은 응답 무시 | tests/viewport.test.js | 실제 범위224건 조회 별도 확인 |

@@ -37,15 +37,42 @@ export function mountApp(root,{tour,members,mode,mapMode='sample',mapKey='',tour
  const chrome=document.createElement('div');chrome.className='route-chrome';chrome.innerHTML='<nav data-breadcrumb aria-label="현재 위치"></nav><p data-route-message role="status"></p>';main.before(chrome);
  const results=root.querySelector('#results'),status=root.querySelector('#search-status'),searchForm=root.querySelector('#search-form');
  const classification=mountClassification(searchForm,{mode});
- let request=0,controller,lastPlaces=[];
+ if(mode==='live'){
+  searchForm.elements.area.querySelector('option[value=""]').remove();
+  searchForm.elements.area.querySelector('option[value="1"]').defaultSelected=true;
+  searchForm.elements.area.value='1';
+ }
+ let request=0,controller,lastPlaces=[],pageInfo=null,activeFilters=null;
+ const independentMap=mode==='live'&&typeof tour.findViewport==='function';
+ let mapController,mapTimer,mapRequest=0,mapSignature='',resultView=mode==='live'?'map':'list';
+ const scheduleMap=(force=false)=>{
+  if(!independentMap||resultView!=='map')return;
+  clearTimeout(mapTimer);mapController?.abort();const current=++mapRequest;
+  mapTimer=setTimeout(async()=>{
+   const bounds=explorer.getBounds(),filters={...activeFilters,bounds};
+   const signature=JSON.stringify(filters);if(!force&&signature===mapSignature){explorer.setQueryState('ready');return;}
+   mapController=new AbortController();explorer.setQueryState('loading');
+   try{
+    const found=await tour.findViewport({...filters,signal:mapController.signal});if(current!==mapRequest)return;
+    mapSignature=signature;
+    const coverage=found.zoomRequired?'범위가 넓습니다. 지도를 확대해주세요.':found.partial?'일부 결과만 조회했습니다. 지도를 확대해주세요.':'현재 지도 범위 조회 완료';
+    explorer.update(found.places,{area:mapArea,coverage});
+   }catch(error){if(current===mapRequest&&error.name!=='AbortError'){mapSignature='';explorer.setQueryState('error');}}
+  },350);
+ };
+ const pager=document.createElement('div');pager.className='result-view-controls';pager.hidden=true;pager.innerHTML='<button type="button" data-page-prev>이전 페이지</button><span role="status" data-page-status></span><button type="button" data-page-next>다음 페이지</button>';results.after(pager);
+ const previous=pager.querySelector('[data-page-prev]'),next=pager.querySelector('[data-page-next]');
+ previous.addEventListener('click',()=>search(pageInfo.pageNo-1));next.addEventListener('click',()=>search(pageInfo.pageNo+1));
  const viewControls=document.createElement('div');viewControls.className='result-view-controls';viewControls.setAttribute('role','group');viewControls.setAttribute('aria-label','검색 결과 표시 방식');viewControls.innerHTML='<button type="button" data-result-view="list" aria-pressed="true">목록 보기</button><button type="button" data-result-view="map" aria-pressed="false">지도 보기</button>';
  searchForm.after(viewControls);const resultMeta=root.querySelector('.results-meta');viewControls.after(resultMeta);
- function setResultView(kind){root.querySelector('#map-explorer').hidden=kind!=='map';results.hidden=kind!=='list';for(const button of viewControls.children)button.setAttribute('aria-pressed',String(button.dataset.resultView===kind));if(kind==='map'&&document.documentElement.clientHeight)window.dispatchEvent(new Event('resize'));}
+ function setResultView(kind){resultView=kind;root.querySelector('#map-explorer').hidden=kind!=='map';results.hidden=kind!=='list';pager.hidden=kind!=='list'||pageInfo?.mode!=='live';for(const button of viewControls.children)button.setAttribute('aria-pressed',String(button.dataset.resultView===kind));if(kind==='map'&&document.documentElement.clientHeight)window.dispatchEvent(new Event('resize'));if(kind==='map')scheduleMap();else{clearTimeout(mapTimer);mapController?.abort();mapRequest++;}}
  viewControls.addEventListener('click',event=>{const kind=event.target.closest('[data-result-view]')?.dataset.resultView;if(kind)setResultView(kind);});
- const explorer=mountExplorer(root.querySelector('#map-explorer'),{mapMode,mapKey,onRegionChange(){
-  if(searchForm.elements.area.value!=='1'){searchForm.elements.area.value='1';search();}else renderPlaces(explorer.visible());
- },onScopeChange(){renderPlaces(explorer.visible());},onPlaceChange(id){setResultView('map');for(const card of results.children)card.classList.toggle('place-selected',card.dataset.contentId===id);}});
- setResultView('list');
+ let mapArea='1';
+ const mountArea=area=>mountExplorer(root.querySelector('#map-explorer'),{area,mapMode,mapKey,onRegionChange(){
+  if(!independentMap)renderPlaces(explorer.visible());
+ },onViewportChange:()=>scheduleMap(),onScopeChange(){if(!independentMap)renderPlaces(explorer.visible());else scheduleMap(true);},onPlaceChange(id){setResultView('map');for(const card of results.children)card.classList.toggle('place-selected',card.dataset.contentId===id);}});
+ let explorer=mountArea(mapArea);
+ setResultView(mode==='live'?'map':'list');
  function renderPlaces(places){
   results.replaceChildren(...places.map(place=>{
    const card=document.createElement('article');card.className='place-card';card.dataset.contentId=place.contentId;
@@ -58,18 +85,26 @@ export function mountApp(root,{tour,members,mode,mapMode='sample',mapKey='',tour
    return card;
   }));
   status.textContent=places.length?`${places.length}개의 여행지를 발견했어요`:'검색 결과가 없습니다. 조건을 바꿔보세요.';
+  if(pageInfo?.mode==='live')status.textContent+=` · 목록 전체 ${pageInfo.totalCount}개 중 ${pageInfo.pageNo}페이지 · 목록 검색어는 현재 페이지 기준`;
  }
- async function search(){
+ async function search(pageNo=1){
   const current=++request;controller?.abort();controller=new AbortController();
-  status.textContent='여행지를 찾고 있습니다…';results.setAttribute('aria-busy','true');explorer.setQueryState('loading');
+  if(pageNo===1||!activeFilters)activeFilters={...Object.fromEntries(new FormData(searchForm)),classification:classification.value()};
+  const data={...activeFilters,pageNo};
+  const area=data.area||'1';if(area!==mapArea){explorer.destroy();mapArea=area;explorer=mountArea(area);}
+  if(pageNo===1)scheduleMap(true);
+  previous.disabled=next.disabled=true;
+  status.textContent='여행지를 찾고 있습니다…';results.setAttribute('aria-busy','true');if(!independentMap)explorer.setQueryState('loading');
   try{
-   const data=Object.fromEntries(new FormData(searchForm));const places=await tour.find({...data,classification:classification.value(),signal:controller.signal});
+   const found=tour.findPage?await tour.findPage({...data,signal:controller.signal}):{places:await tour.find({...data,signal:controller.signal}),mode:'sample'};
    if(current!==request) return;
-   lastPlaces=places;renderPlaces(explorer.update(lastPlaces,{area:data.area}));
-  }catch(error){if(current===request&&error.name!=='AbortError'){results.replaceChildren();explorer.setQueryState('error');status.textContent=error.message||'조회하지 못했습니다. 다시 시도해주세요.';}}
+   pageInfo=found;lastPlaces=found.places;renderPlaces(independentMap?lastPlaces:explorer.update(lastPlaces,{area:data.area}));
+   pager.hidden=found.mode!=='live'||resultView!=='list';previous.disabled=found.pageNo<=1;next.disabled=found.pageNo*20>=found.totalCount;pager.querySelector('[data-page-status]').textContent=`${found.pageNo} / ${Math.max(1,Math.ceil(found.totalCount/20))} 페이지`;
+  }catch(error){if(current===request&&error.name!=='AbortError'){results.replaceChildren();pager.hidden=true;if(!independentMap)explorer.setQueryState('error');status.textContent=error.message||'조회하지 못했습니다. 다시 시도해주세요.';}}
   finally{if(current===request) results.setAttribute('aria-busy','false');}
  }
  searchForm.addEventListener('submit',event=>{event.preventDefault();explorer.clearSelection();search();});
+ searchForm.elements.area.addEventListener('change',()=>{explorer.clearSelection();search();});
  root.querySelector('#reset-search').addEventListener('click',()=>{searchForm.reset();classification.reset();explorer.clearSelection();search();});
  const dialog=root.querySelector('#account-dialog'),panel=root.querySelector('#account-panel'),nav=root.querySelector('#account-nav');
  function renderNav(){
@@ -113,5 +148,5 @@ export function mountApp(root,{tour,members,mode,mapMode='sample',mapKey='',tour
  renderNav();search();
  const courses=mountCourses(root);
  const navigation=mountNavigation(root,{showCandidate:id=>randomTrip.showCandidate(id),closeCandidate:()=>randomTrip.closeCandidate(),onPage:(page,hash)=>{if(page==='random-trip')randomTrip.activate();courses.render(page,hash);}});
- return {search,destroy(){navigation.destroy();courses.destroy();controller?.abort();request++;explorer.destroy();randomTrip.destroy();}};
+ return {search,destroy(){navigation.destroy();courses.destroy();controller?.abort();request++;clearTimeout(mapTimer);mapController?.abort();mapRequest++;explorer.destroy();randomTrip.destroy();}};
 }

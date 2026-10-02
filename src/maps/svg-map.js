@@ -3,7 +3,7 @@ const ns='http://www.w3.org/2000/svg';
 const node=(name,attrs={})=>{const el=document.createElementNS(ns,name);for(const [key,value] of Object.entries(attrs))el.setAttribute(key,String(value));return el;};
 const mercator=lat=>Math.log(Math.tan(Math.PI/4+lat*Math.PI/360));
 export function createSvgMap(container,{regions,onRegion,onPlace}){
- const svg=node('svg',{viewBox:'0 0 800 540',role:'img','aria-label':'서울 25개 구 경계와 관광정보 밀도 샘플 지도'});
+ const svg=node('svg',{viewBox:'0 0 800 540',role:'img','aria-label':'선택 지역 경계와 조회된 관광정보 지도'});
  container.replaceChildren(svg);
  let frame=boundsOf(regions),state={regions,selectedRegion:null,selectedPlace:null};
  function project([lon,lat]){

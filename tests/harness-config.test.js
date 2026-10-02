@@ -17,3 +17,5 @@ it('지도 전용 모드는 TourAPI 키를 공개하지 않는다',()=>{
  expect(settings.define['import.meta.env.VITE_TOUR_API_KEY']).toBe('""');
  expect(settings.define['import.meta.env.VITE_MAP_MODE']).toBe('"kakao"');
 });
+
+it('TOUR-46 live에서도 관광 키는 클라이언트에 공개하지 않는다',()=>{const settings=config({mode:'live'});expect(settings.define['import.meta.env.VITE_TOUR_API_KEY']).toBe('\"\"');expect(settings.plugins).toHaveLength(1);});
