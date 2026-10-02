@@ -41,3 +41,17 @@ DS-02 디자인 개선: docs/design-system.md에 계획·적용범위·잔여 �
 | MAP-21 | 실연동 초기 지도·지역 변경 자동 조회·초기화 | tests/auto-map.test.js | 합성 응답 검증 |
 
 | MAP-22 | 지도 범위 조회·20건 이상 표시·목록 분리·늦은 응답 무시 | tests/viewport.test.js | 실제 범위224건 조회 별도 확인 |
+
+## F104 / CB 블록 코스
+
+| 요구사항 | 검증 |
+|---|---|
+| CB-01 후보 중복·출처·사용자 격리·복원 | tests/course-blocks.test.js, e2e/course-sharing.spec.js |
+| CB-02 블록 정렬·삭제·취소·드래그 | e2e/course-sharing.spec.js |
+| CB-03 합계·미확인·구간 초기화 | tests/course-blocks.test.js, tests/course-simplification.test.js, e2e/course-sharing.spec.js |
+| CB-04 저장·공유·복사·게시판 | tests/course-blocks.test.js, e2e/course-sharing.spec.js, e2e/board-integration.spec.js |
+| CB-05 기존 데이터/핵심 서비스 유지·UI 간소화 | tests/course-core.test.js, tests/course-boundaries.test.js, tests/course-simplification.test.js |
+| CB-06 저장 실패·손상·제공자 취소 | tests/course-blocks.test.js, tests/course-core.test.js, tests/course-ui.test.js |
+| CB-07 360/768/1440px 최대3단계 | e2e/course-sharing.spec.js |
+
+검증 결과: harness107 단위·DOM /32 E2E /빌드 통과, rules:check15 통과. CRS의 점수·리뷰 핵심 테스트는 유지하고 이전 UI 표시 검증은 사용자 요청에 따라 CB 계약으로 대체했다.

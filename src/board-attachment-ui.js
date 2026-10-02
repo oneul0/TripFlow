@@ -6,6 +6,7 @@ export function renderAttachment(root,attachment){
  const list=document.createElement('ol');for(const place of attachment.places){const li=document.createElement('li');li.textContent=place.title;list.append(li);}
  root.append(heading,note,list);
  if(attachment.places.some(p=>p.source==='sample')){const p=document.createElement('p');p.textContent='합성 장소를 포함한 체험 코스입니다.';root.append(p);}
+ if(attachment.estimates){const e=attachment.estimates,p=document.createElement('p');p.textContent=`예상 시간 ${e.minutes||e.timeComplete?e.minutes+'분'+(e.timeComplete?'':' · 일부 미확인'):'미확인'} / 예상 소비 ${e.cost||e.costComplete?e.cost.toLocaleString()+'원'+(e.costComplete?'':' · 일부 미확인'):'미확인'} · 1인 (입력한 추정치)`;root.append(p);}
  if(attachment.costBasis){const p=document.createElement('p');p.textContent=[attachment.costBasis==='estimate'?'추정':'도로 경로 기준',attachment.totalDistanceMeters===null?null:`이동 거리 ${attachment.totalDistanceMeters}m`,attachment.totalDurationSeconds===null?null:`이동 시간 ${Math.round(attachment.totalDurationSeconds/60)}분`].filter(Boolean).join(' · ');root.append(p);}
 }
 export function mountAttachment(root,{courseService,members,initial=null,courseId='',isActive=()=>true,onBusy=()=>{}}){
