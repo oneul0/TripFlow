@@ -1,0 +1,3 @@
+import {it,expect} from 'vitest';
+import {mountApp} from '../src/ui.js';
+it('BRAND-01 사용자 화면은 TripFlow 로고와 서비스명으로 표시한다',()=>{document.body.innerHTML='<div id="app"></div>';const app=mountApp(document.querySelector('#app'),{tour:{find:async()=>[]},members:{current:()=>null},mode:'sample'});try{expect(document.querySelectorAll('img[alt="TripFlow"]')).toHaveLength(2);expect(document.body.textContent).not.toContain('EnjoyTrip');expect(document.title).toContain('TripFlow');document.querySelector('#account-nav button:last-child').click();expect(document.querySelector('#account-title').textContent).toContain('TripFlow');}finally{app.destroy();}});

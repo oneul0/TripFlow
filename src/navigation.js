@@ -14,7 +14,7 @@ export function mountNavigation(root,{showCandidate,closeCandidate,onPage}={}){
   const chain=page==='candidate-detail'?['home','candidates','candidate-detail']:page==='course-detail'?['home','courses',page]:page==='course-editor'?['home','my-trips',page]:['home',page];
   chain.forEach((key,index)=>{if(index){const separator=document.createElement('span');separator.textContent=' / ';separator.setAttribute('aria-hidden','true');crumb.append(separator);}const el=document.createElement(index===chain.length-1?'span':'a');el.textContent=pages[key].label;if(el.tagName==='A')el.href=`#${key}`;else el.setAttribute('aria-current','page');crumb.append(el);});
   if(page==='board'){const nested=hash.startsWith('board/');root.querySelector('#board').dataset.depth=nested?'3':'2';if(nested){const label=document.createElement('span');label.textContent=hash.startsWith('board/write')?' / 글쓰기':hash.startsWith('board/edit/')?' / 후기 수정':' / 후기 상세';crumb.append(label);}}
-  document.title=`${pages[page].label} · EnjoyTrip`;onPage?.(page,hash);
+  document.title=`${pages[page].label} · TripFlow`;onPage?.(page,hash);
   if(!initial){const heading=root.querySelector(`#${page} h1,#${page} h2,#${page} h3`);heading?.setAttribute('tabindex','-1');heading?.focus({preventScroll:true});if(document.documentElement.clientHeight)window.scrollTo({top:0,behavior:'instant'});}
  }
  const change=()=>render();window.addEventListener('hashchange',change);render(true);

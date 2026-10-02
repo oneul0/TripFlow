@@ -67,3 +67,5 @@ DS-02 디자인 개선: docs/design-system.md에 계획·적용범위·잔여 �
 RND-17: tests/random-trip-ui.test.js의 포인터 이동량/잡기 오프셋/취소 복귀, tests/random-gameplay.test.js의 놓은 위치 발사 검증. 기존 실제 쓸기/스핀 E2E 유지.
 
 RND-18: tests/random-upgrade.test.js — 비행 투영 크기의 연속 감소/착지 지름 절반 이하/시작 공 위치 검증. 기존 포인터 집기와 발사 E2E 유지.
+
+BRAND-01: tests/branding.test.js — TripFlow 이미지 대체 텍스트·화면 서비스명·제목·회원가입 안내 검증. 기존 e2e/app.spec.js의360/768/1440px 흐름과 전체 harness115 단위·DOM/32 E2E/빌드, rules:check15 통과.

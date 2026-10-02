@@ -175,3 +175,9 @@ dialog h2 { font-size: 26px; font-weight: 800; letter-spacing: -.8px; margin-bot
 .classification-fields select { width: 100%; }
 @media(max-width:600px) { .classification-fields { grid-template-columns: 1fr; } }
 @media(prefers-reduced-motion:reduce) { html { scroll-behavior: auto; } *,*:before,*:after { animation: none!important; transition: none!important; } .reveal { opacity: 1; transform: none; } }
+
+/* Supplied TripFlow vector wordmark, kept at its original aspect ratio. */
+.brand{display:inline-flex;align-items:center;flex-shrink:0;line-height:1}
+.brand-logo{display:block;width:168px;height:auto;max-width:100%;object-fit:contain}
+footer .brand-logo{width:150px}
+@media(max-width:600px){.brand-logo{width:140px}footer .brand-logo{width:140px}}

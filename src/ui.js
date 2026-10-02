@@ -12,14 +12,14 @@ function field(name,label,type='text',autocomplete='',value=''){
 }
 export function mountApp(root,{tour,members,board,courseCommunity,courseService,mode,mapMode='sample',mapKey='',tourPreview}) {
  root.innerHTML=`
- <header class="site-header"><a class="brand" href="#"><span class="brand-mark">e<span>✦</span></span>EnjoyTrip<span class="brand-dot">.</span></a><nav aria-label="주 메뉴"><a class="nav-active" href="#explore">여행지 탐색</a><a href="#about">서비스 소개</a></nav><div id="account-nav" class="account-nav"></div></header>
+ <header class="site-header"><a class="brand" href="#" aria-label="TripFlow 홈"><img class="brand-logo" src="/images/tripflow-logo.svg" alt="TripFlow" width="910" height="260"></a><nav aria-label="주 메뉴"><a class="nav-active" href="#explore">여행지 탐색</a><a href="#about">서비스 소개</a></nav><div id="account-nav" class="account-nav"></div></header>
  <main><section class="hero"><div class="hero-copy"><p class="eyebrow">THE WEEKEND IS YOURS</p><h1>이번 주말,<br>어디든 <em>좋아.</em></h1><p class="hero-description">바다로, 골목으로, 낯선 도시로.<br>마음이 먼저 떠나는 여행을 찾아보세요.</p><a class="hero-link" href="#explore">여행지 둘러보기 <span>↗</span></a><div class="hero-edition"><span>LOCAL TRAVEL CLUB</span><span>VOL. 01 — 가을의 시작</span></div></div><div class="hero-landscape" role="img" aria-label="제주 해안을 모티프로 생성한 여행 이미지"><div class="destination-stamp">다음 목적지<br><strong>JEJU</strong><span>33.45° N / 126.53° E</span></div><div class="landscape-label"><span>GO SOMEWHERE NEW.</span><strong>길 끝에서 만나는 바다.</strong><small>AI 생성 여행 이미지</small></div></div></section>
  <section id="explore" class="explore-section"><div class="section-heading"><div><p class="eyebrow">PICK YOUR NEXT STOP</p><h2>취향 따라, 발길 따라.</h2></div><p>가까운 여행부터 시작해요 ↙</p></div>
  <form id="search-form" class="search-panel"><div class="search-field"><label for="area">지역</label><select class="form-select" id="area" name="area"><option value="">전국 어디든</option>${options(areas)}</select></div><div class="search-field"><label for="type">콘텐츠 유형</label><select class="form-select" id="type" name="type"><option value="">모든 여행 경험</option>${options(types)}</select></div><div class="search-field keyword"><label for="query">검색어</label><input class="form-control" id="query" name="query" placeholder="장소나 주소를 입력하세요" maxlength="100"></div><button class="btn search-button" type="submit">여행지 찾기 <span aria-hidden="true">↗</span></button></form>
  <section id="map-explorer" class="map-explorer" aria-label="지도에서 지역 탐색"></section>
  <div class="results-meta"><div><span class="mode-badge">${mode==='sample'?'샘플 데이터 모드':'공공데이터 연동 모드'}</span><span id="search-status" role="status" aria-live="polite"></span></div><button type="button" id="reset-search" class="reset-button">필터 초기화 ↻</button></div><div id="results" class="place-grid" aria-busy="false"></div>
- </section><section id="about" class="about"><span class="brand-mini">✦</span><div><h2>여행은 새로운 시선에서 시작해요.</h2><p>EnjoyTrip과 함께 우리 지역의 작은 발견을 모아보세요.</p><small>${mode==='sample'?'현재 목록은 동작 확인을 위한 직접 작성한 샘플이며, 실제 관광정보가 아닙니다.':'출처: 한국관광공사 국문 관광정보 서비스. 키워드는 조회된 목록에서 검색합니다.'}</small></div></section></main>
- <footer><a class="brand" href="#">EnjoyTrip.</a><span>조금 더 가까이, 조금 더 새롭게.</span><small>© 2026 EnjoyTrip</small></footer>
+ </section><section id="about" class="about"><span class="brand-mini">✦</span><div><h2>여행은 새로운 시선에서 시작해요.</h2><p>TripFlow과 함께 우리 지역의 작은 발견을 모아보세요.</p><small>${mode==='sample'?'현재 목록은 동작 확인을 위한 직접 작성한 샘플이며, 실제 관광정보가 아닙니다.':'출처: 한국관광공사 국문 관광정보 서비스. 키워드는 조회된 목록에서 검색합니다.'}</small></div></section></main>
+ <footer><a class="brand" href="#" aria-label="TripFlow 홈"><img class="brand-logo" src="/images/tripflow-logo.svg" alt="TripFlow" width="910" height="260"></a><span>조금 더 가까이, 조금 더 새롭게.</span><small>© 2026 TripFlow</small></footer>
  <dialog id="account-dialog" aria-labelledby="account-title"><button id="close-account" class="close-dialog" type="button" aria-label="닫기">×</button><div id="account-panel"></div></dialog>`;
  const main=root.querySelector('main'),home=document.createElement('section');home.id='home';home.dataset.appView='';home.dataset.depth='1';main.prepend(home);
  home.append(root.querySelector('.hero'));
@@ -117,7 +117,7 @@ export function mountApp(root,{tour,members,board,courseCommunity,courseService,
  root.querySelector('#close-account').addEventListener('click',()=>dialog.close());
  nav.addEventListener('click',event=>{const view=event.target.closest('[data-account]')?.dataset.account;if(!view)return;if(view==='logout'){try{members.logout();renderNav();accountChanged();dialog.close();}catch(error){status.textContent=error.message;}}else openAccount(view);});
  function renderAccount(view){
-  const titles={login:'다시 만나 반가워요',register:'여행의 시작, EnjoyTrip',reset:'비밀번호 찾기',profile:'내 여행 프로필'};
+  const titles={login:'다시 만나 반가워요',register:'여행의 시작, TripFlow',reset:'비밀번호 찾기',profile:'내 여행 프로필'};
   let user;try{user=members.current();}catch(error){panel.textContent=error.message;return;}
   if(view==='profile'&&!user){view='login';}
   let inputs='',submit='';
