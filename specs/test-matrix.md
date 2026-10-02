@@ -22,3 +22,9 @@
 
 | UIA-01~05 | tests/navigation.test.js | 홈 분리·단일 화면·최대 깊이·현재 메뉴·검색 유지·잘못된 주소 |
 | UIA-02~07 | e2e/navigation.spec.js | 360/768/1440px 시나리오·키보드·직접 주소/새로고침·뒤로 가기·비행 취소 |
+
+코스 확장 CRS-01~34는 **설계만 완료, 테스트 미작성·미실행**이다. [예정 테스트 매핑](features/course-recommendation.md#개발-게이트와-테스트-계획-미작성미실행)에 따라 구현 전에 실패 테스트부터 추가한다.
+
+코스 당일 합성 구현: tests/course-core.test.js, tests/course-boundaries.test.js, tests/course-ui.test.js, e2e/course-sharing.spec.js. 실제 구현/미구현 경계는 [CRS 매핑](features/course-recommendation.md#당일-샘플-검증-매핑)을 따른다. 위 '미작성' 기록은 최초 설계 시점이며 이 섹션이 최신이다.
+
+UX-CRS-01~04: tests/course-simplification.test.js, e2e/course-sharing.spec.js — 첫 입력 축소, 선택 조건 접기/보존, 기본 점수 미표시, 편집 제어 숨김, 세션 조건 재사용.

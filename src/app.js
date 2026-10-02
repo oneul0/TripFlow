@@ -4,6 +4,7 @@ import './design-system.css';
 import './map.css';
 import './random-trip.css';
 import './navigation.css';
+import './course.css';
 import {installMotion} from './motion.js';
 import {createSampleCatalog,createTourApiCatalog} from './adapters/catalog.js';
 import {localSearch,createLogger,unavailableAssistant} from './adapters/extensions.js';

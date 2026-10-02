@@ -27,3 +27,7 @@
 360·768·1440px에서 주요 흐름 및 가로 넘침 확인. 필드 오류와 상태 메시지 접근성 제공. 외부 데이터는 textContent 또는 escaping으로 출력. 로그에 이메일·비밀번호·복구코드·API 키·검색 원문 기록 금지.
 
 추가 제안 UIA-01~07: 사용자 시나리오 기반 화면 분리, 최대3단계 탐색, 후보/상세 독립화, 검색 상태 유지, 직접 주소/복귀, 요청 취소, 반응형·접근성. [상세 수용 기준](features/ui-navigation.md), [재배치 계획](../docs/ui-reorganization.md).
+
+## 코스 추천·공유 설계 (미구현)
+
+F104 여행계획과 F110 공유게시판을 유지하고 CRS-01~34로 추천 생성, 공개 버전, 저장/복사, 리뷰, 개인 적합도, AI 제공자 계약을 구체화한다. [설계](../docs/course-recommendation-design.md), [수용 기준](features/course-recommendation.md), [계약](course-interfaces.md). 점수는 시스템 계산 개인 적합도이며 사용자 리뷰 별점과 분리한다.

@@ -1,0 +1,4 @@
+import {it,expect,afterEach} from 'vitest';
+import {mountCourses} from '../src/course-ui.js';
+let ui;afterEach(()=>{ui?.destroy();localStorage.clear();document.body.replaceChildren();});
+it('UX-CRS 초기 선호 미입력, 단일 장소 입력과 접힌 상세조건',()=>{document.body.innerHTML='<div id="app"><nav class="primary-nav"></nav><main><div class="home-entries"></div></main></div>';ui=mountCourses(document.querySelector('#app'));ui.render('course-editor','course-editor');const form=document.querySelector('[data-plan-form]');expect(form.querySelector('[name=budget]').value).toBe('');expect(form.querySelector('[name=interest]').value).toBe('');expect(form.querySelector('[name=pace]').value).toBe('');expect(form.querySelector('[name=title]')).toBeNull();expect(form.querySelector('[data-conditions]').open).toBe(false);expect(document.querySelector('[data-fit]')?.textContent||'').not.toContain('100점');});

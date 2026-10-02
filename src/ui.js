@@ -1,3 +1,4 @@
+import {mountCourses} from './course-ui.js';
 import {areas,types} from './adapters/catalog.js';
 import {mountExplorer} from './map-explorer.js';
 import {mountRandomTrip} from './random-trip.js';
@@ -50,6 +51,7 @@ export function mountApp(root,{tour,members,mode,mapMode='sample',mapKey='',tour
    const scene=['coast','sea','food','stay','culture','palace','festival','shop'].includes(place.scene)?place.scene:'coast';
    card.innerHTML=`<div class="place-visual scene-${scene}"><span class="category">${escape(types[place.contentTypeId]||'여행지')}</span><span class="visual-word">${escape(areas[place.areaCode]||'KOREA')}</span><span class="image-note">이미지 예시 · AI 생성</span></div><div class="place-body"><p class="place-area">${escape(areas[place.areaCode]||'대한민국')}</p><h3>${escape(place.title)}</h3><p>${escape(place.description||place.address||'주소 정보 없음')}</p><span class="place-address">${escape(place.address)}</span></div>`;
    if(explorer.hasPlace(place.contentId)){const button=document.createElement('button');button.type='button';button.className='place-map-button';button.dataset.focusPlace=place.contentId;button.textContent='지도에서 보기 ↗';button.setAttribute('aria-label',`${place.title} 지도에서 보기`);button.addEventListener('click',()=>explorer.choosePlace(place.contentId));card.querySelector('.place-body').append(button);}
+   if(mode==='sample'){const add=document.createElement('button');add.type='button';add.dataset.coursePlace=place.contentId;add.textContent='일정에 추가';card.querySelector('.place-body').append(add);}
    if(place.imageUrl){try{const url=new URL(place.imageUrl);if(['https:','http:'].includes(url.protocol)){const img=document.createElement('img');img.src=url.href;img.alt='';img.loading='lazy';img.referrerPolicy='no-referrer';img.addEventListener('load',()=>card.querySelector('.image-note').hidden=true,{once:true});img.addEventListener('error',()=>img.remove(),{once:true});card.querySelector('.place-visual').prepend(img);}}catch{/* Keep generated example for malformed URLs. */}}
    return card;
   }));
@@ -107,6 +109,7 @@ export function mountApp(root,{tour,members,mode,mapMode='sample',mapKey='',tour
   });
  }
  renderNav();search();
- const navigation=mountNavigation(root,{showCandidate:id=>randomTrip.showCandidate(id),closeCandidate:()=>randomTrip.closeCandidate(),onPage:page=>{if(page==='random-trip')randomTrip.activate();}});
- return {search,destroy(){navigation.destroy();controller?.abort();request++;explorer.destroy();randomTrip.destroy();}};
+ const courses=mountCourses(root);
+ const navigation=mountNavigation(root,{showCandidate:id=>randomTrip.showCandidate(id),closeCandidate:()=>randomTrip.closeCandidate(),onPage:(page,hash)=>{if(page==='random-trip')randomTrip.activate();courses.render(page,hash);}});
+ return {search,destroy(){navigation.destroy();courses.destroy();controller?.abort();request++;explorer.destroy();randomTrip.destroy();}};
 }

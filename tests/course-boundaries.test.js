@@ -1,0 +1,7 @@
+import {it,expect} from 'vitest';
+import {createCourseCommunity} from '../src/modules/course-community.js';
+import {generateCourse,evaluateFit} from '../src/modules/course-planner.js';
+it('CRS21/22 명세의 80점과 정보 일부 누락 77점 재현',()=>{const input={tags:['culture'],pace:[2,4],budget:50000,travelTarget:60};const facts={interest:.8,visits:6,cost:55000,travelMinutes:60};expect(evaluateFit(input,facts).score).toBe(80);expect(evaluateFit(input,{...facts,cost:null}).score).toBe(77);});
+it('CRS 손상된 저장 스냅샷은 원본 유지하고 거절',()=>{const raw=JSON.stringify({version:1,plans:[{}],courses:[],saved:[],reviews:[]});expect(()=>createCourseCommunity({getItem:()=>raw,setItem:()=>{throw Error('must not write');}})).toThrow();});
+it('CRS 잘못된 장소와 상한 위반 계획은 게시 불가',()=>{let raw=null;const s=createCourseCommunity({getItem:()=>raw,setItem:(_,v)=>raw=v});expect(()=>s.savePlan('alice',{title:'X',input:{},stops:[{id:'a',title:'A',stay:-5,cost:0,tags:[]}]})).toThrow();const p=s.savePlan('alice',{title:'X',input:{start:540,end:550,required:[]},stops:[{id:'a',title:'A',area:'1',stay:60,cost:0,tags:[]}]});expect(()=>s.publish('alice',p.id,p.version)).toThrow();});
+it('CRS 후보 순서 결정성과 필수 방문 보존',()=>{const input={area:'1',start:540,end:1000,required:['b'],tags:[]},a={id:'a',title:'A',area:'1',stay:60,cost:0,tags:[]},b={...a,id:'b'};expect(generateCourse(input,[a,b])).toEqual(generateCourse(input,[b,a]));expect(generateCourse(input,[a,b]).stops[0].id).toBe('b');});
