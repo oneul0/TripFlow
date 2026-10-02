@@ -89,3 +89,5 @@ UX-COPY-01: tests/service-copy.test.js에서 금지된 개발 안내 문구 부�
 | CB-FLOW-01~04 | 통합 후보 선택·블록 구성·생성·PNG 티켓 | tests/course-ticket.test.js, e2e/course-workflow.spec.js, e2e/course-sharing.spec.js |
 
 | CB-TICKET-01 | 항공권형 티켓과 기존 내용 보존 | tests/course-ticket.test.js, e2e/course-workflow.spec.js |
+
+| F111 / WTH-01~05 | 날짜·지점 매칭·취소·응답 정규화·서버 키 격리·저장/복사·PNG | tests/course-weather.test.js, tests/weather-server.test.js, tests/course-weather-ui.test.js, e2e/course-weather.spec.js |

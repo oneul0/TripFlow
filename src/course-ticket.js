@@ -1,3 +1,4 @@
+import {validWeather,weatherSymbol} from './modules/course-weather.js';
 import {blockTotals} from './modules/course-blocks.js';
 import {types} from './adapters/catalog.js';
 const xml=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
@@ -9,7 +10,7 @@ export function ticketSVG(course){
  let y=143;
  label('YOUR NEXT DEPARTURE',40,y,13,muted);y+=40;
  for(const title of lines(course.title,19)){label(title,40,y,28);y+=38;}
- label('여행 코스 · 방문 순서',40,y+12,16,muted);y+=50;
+ label('여행 코스 · 방문 순서'+(course.input?.tripDate?' · '+course.input.tripDate:''),40,y+12,16,muted);y+=50;
  shapes.push('<path d="M40 '+y+'H554" stroke="#ded9e7"/>');y+=40;
  course.stops.forEach((p,i)=>{
   shapes.push('<rect x="40" y="'+(y-22)+'" width="40" height="32" rx="5" fill="#eee7fc"/>');
@@ -18,6 +19,20 @@ export function ticketSVG(course){
   y+=29;for(const name of lines(p.title,22)){label(name,96,y,20);y+=29;}y+=26;
  });
  const totals=blockTotals(course.stops),time=totals.minutes||totals.timeComplete?totals.minutes+'분'+(totals.timeComplete?'':' · 일부 미확인'):'미확인',cost=totals.cost||totals.costComplete?totals.cost.toLocaleString()+'원'+(totals.costComplete?'':' · 일부 미확인'):'미확인';
+ const w=course.input?.weather;
+ if(course.input?.tripDate){
+  shapes.push('<path d="M40 '+y+'H554" stroke="#ded9e7"/>');y+=32;label('SKY ALONG YOUR WAY',40,y,14,purple);y+=28;
+  if(validWeather(w)&&w.date===course.input.tripDate){
+   for(const row of lines((w.mode==='sample'?'샘플 예보':'기상청')+' · 첫 방문지'+(w.nearby?' 주변':'')+' 기준',32)){label(row,40,y,14,muted);y+=22;}
+   for(const row of lines(w.stationName,30)){label(row,40,y,14,muted);y+=22;}y+=8;
+   if(w.status==='ready'){
+    w.slots.forEach((slot,i)=>{const x=40+(i%4)*130,top=y+Math.floor(i/4)*145,icon=weatherSymbol(slot.sky);shapes.push('<rect x="'+x+'" y="'+top+'" width="122" height="135" rx="12" fill="#eef3f8"/>');label(slot.time,x+12,top+22,14,muted);text.push('<text x="'+(x+12)+'" y="'+(top+65)+'" font-size="32" font-family="Segoe UI Emoji, Apple Color Emoji, sans-serif">'+icon.emoji+'</text>');label(slot.temperature===null?'미확인':slot.temperature+'°',x+66,top+61,18);label(icon.label,x+12,top+90,13);label('강수 '+(slot.pop===null?'미확인':slot.pop+'%'),x+12,top+116,12,muted);});
+    y+=Math.ceil(w.slots.length/4)*145;
+   }else{label(w.status==='unavailable'?'예보 제공 범위 밖 · 여행일에 가까워지면 확인':'날씨 미확인 · 제공된 예보가 없습니다',40,y+18,15,muted);y+=48;}
+   label('3시간 간격 · 한국시간 · 저장 시 조회한 예보',40,y+12,13,muted);y+=34;
+   label('조회 '+new Date(w.fetchedAt).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}),40,y,13,muted);y+=30;
+  }else{label('날씨 미확인 · 연결 가능한 예보가 없습니다',40,y,15,muted);y+=34;}
+ }
  const height=Math.max(590,y+110);
  shapes.push('<path d="M40 '+(height-104)+'H554" stroke="#ded9e7"/>');
  label('입력한 추정치 · 첫 장소까지와 귀가 이동 제외',40,height-70,14,muted);

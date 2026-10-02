@@ -15,7 +15,7 @@ export function createCourseCommunity(storage){
  const own=(data,id,user)=>{const p=data.plans.find(p=>p.id===id&&p.owner===user);if(!p)fail('계획을 찾을 수 없습니다.');return p;};
  const publicCourse=(data,id)=>{const c=data.courses.find(c=>c.id===id&&c.status==='published');if(!c)fail('공개 코스를 찾을 수 없습니다.');return c;};
  const rating=(id,revision)=>{const values=state.reviews.filter(r=>r.courseId===id&&(!revision||r.revisionId===revision)).map(r=>r.rating);return {count:values.length,average:values.length?values.reduce((a,b)=>a+b,0)/values.length:null};};
- const snapshot=p=>({id:crypto.randomUUID(),title:p.title,stops:p.stops.map(({id,title,area,tags,stay,cost,source,contentId,category,address,incomingMinutes,incomingCost})=>({id,title,area,tags:[...tags],stay,cost,source,contentId,category,address,incomingMinutes,incomingCost})),number:1});
+ const snapshot=p=>({id:crypto.randomUUID(),title:p.title,tripDate:p.input.tripDate,weather:clone(p.input.weather??null),stops:p.stops.map(({id,title,area,tags,stay,cost,source,contentId,category,address,latitude,longitude,incomingMinutes,incomingCost})=>({id,title,area,tags:[...tags],stay,cost,source,contentId,category,address,incomingMinutes,incomingCost})),number:1});
  return {
  plans:user=>clone(state.plans.filter(p=>p.owner===user)),
  list:()=>clone(state.courses.filter(c=>c.status==='published').map(c=>({...c,revision:c.revisions.at(-1),rating:rating(c.id,c.revisions.at(-1).id)}))),
@@ -27,7 +27,7 @@ export function createCourseCommunity(storage){
  save(user,id,revisionId){return mutate(d=>{actor(user);const c=publicCourse(d,id),rev=revisionId?c.revisions.find(r=>r.id===revisionId):c.revisions.at(-1);if(!rev)fail('버전을 찾을 수 없습니다.');const old=d.saved.find(s=>s.user===user&&s.courseId===id);if(old)return old;const s={user,courseId:id,revisionId:rev.id};d.saved.push(s);return s;});},
  unsave(user,id){return mutate(d=>{d.saved=d.saved.filter(s=>!(s.user===actor(user)&&s.courseId===id));return true;});},
  saved(user){return clone(state.saved.filter(s=>s.user===user).map(s=>{const c=state.courses.find(c=>c.id===s.courseId);return {...s,available:c?.status==='published',revision:c?.status==='published'?c.revisions.find(r=>r.id===s.revisionId):null,hasNewRevision:c?.revisions.at(-1).id!==s.revisionId};}));},
- copy(user,id,revisionId){const c=this.course(id,revisionId);return this.savePlan(user,{title:c.revision.title,input:{area:c.revision.stops[0]?.area||'',blockEditor:true,required:[]},stops:c.revision.stops,source:{courseId:id,revisionId:c.revision.id}});},
+ copy(user,id,revisionId){const c=this.course(id,revisionId);return this.savePlan(user,{title:c.revision.title,input:{area:c.revision.stops[0]?.area||'',blockEditor:true,required:[],tripDate:c.revision.tripDate,weather:c.revision.weather},stops:c.revision.stops,source:{courseId:id,revisionId:c.revision.id}});},
  review(user,id,ratingValue,body,revisionId){actor(user);if(!Number.isInteger(ratingValue)||ratingValue<1||ratingValue>5)fail('별점은 1~5점입니다.');body=text(body,2000);return mutate(d=>{const c=publicCourse(d,id);if(c.owner===user)fail('본인 코스에는 리뷰를 남길 수 없습니다.');const rev=revisionId?c.revisions.find(r=>r.id===revisionId):c.revisions.at(-1);if(!rev)fail('버전을 찾을 수 없습니다.');let r=d.reviews.find(r=>r.user===user&&r.courseId===id);if(!r){r={user,courseId:id};d.reviews.push(r);}Object.assign(r,{rating:ratingValue,body,revisionId:rev.id});return r;});},
  deleteReview(user,id){return mutate(d=>{d.reviews=d.reviews.filter(r=>!(r.user===actor(user)&&r.courseId===id));return true;});}
  };

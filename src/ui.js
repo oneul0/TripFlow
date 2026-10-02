@@ -13,7 +13,7 @@ const options=map=>Object.entries(map).map(([value,label])=>`<option value="${va
 function field(name,label,type='text',autocomplete='',value=''){
  return `<div class="mb-3"><label class="form-label" for="account-${name}">${label}</label><input class="form-control" id="account-${name}" name="${name}" type="${type}" autocomplete="${autocomplete}" value="${escape(value)}" required ${type==='password'?'minlength="8" maxlength="128"':''}></div>`;
 }
-export function mountApp(root,{tour,members,board,courseCommunity,courseService,mode,mapMode='sample',mapKey='',tourPreview}) {
+export function mountApp(root,{tour,members,board,courseCommunity,courseService,weather,mode,mapMode='sample',mapKey='',tourPreview}) {
  root.innerHTML=`
  <header class="site-header"><a class="brand" href="#" aria-label="TripFlow 홈"><img class="brand-logo" src="/images/tripflow-logo.svg" alt="TripFlow" width="910" height="260"></a><nav aria-label="주 메뉴"><a class="nav-active" href="#explore">여행지 탐색</a><a href="#about">서비스 소개</a></nav><div id="account-nav" class="account-nav"></div></header>
  <main><section class="hero"><div class="hero-copy"><p class="eyebrow">A LITTLE TRIP. A BIG STORY.</p><h1>일상 밖으로,<br>이야기 <em>속으로.</em></h1><p class="hero-description">끌리는 곳을 담고, 나만의 코스로 연결하고.<br>함께 나누고 싶은 여행을 시작해요.</p><a class="hero-link" href="#explore">내 다음 여행 찾기 <span aria-hidden="true">↗</span></a></div><div class="trip-collage" aria-hidden="true"><div class="trip-postcard"><span>OFF TO SOMEWHERE</span><div class="trip-postcard-art"><i></i><b>✦</b></div><strong>어디든, 좋아.</strong><small>TripFlow travel club</small></div><div class="trip-ticket"><span>YOUR NEXT STOP</span><strong>뜻밖의<br>발견!</strong><b>↗</b><small>GO. COLLECT. SHARE.</small></div><span class="trip-sticker">이번 주말<br>떠나볼까?</span></div></section>
@@ -154,7 +154,7 @@ export function mountApp(root,{tour,members,board,courseCommunity,courseService,
   });
  }
  renderNav();search();
- const courses=mountCourses(root,{members,community:courseCommunity,tour});
+ const courses=mountCourses(root,{members,community:courseCommunity,tour,weather});
  let boardUI;
  if(board){const boardRoot=document.createElement('section');boardRoot.id='board';boardRoot.className='board-page';boardRoot.dataset.appView='';boardRoot.dataset.depth='2';boardRoot.hidden=true;main.append(boardRoot);primaryNav.insertAdjacentHTML('beforeend','<a href="#board">커뮤니티</a>');
  boardUI=mountBoard(boardRoot,{board,members,courseService,onLogin:()=>openAccount('login'),navigate:hash=>{if(location.hash.slice(1)===hash)boardUI.render(hash);else location.hash=hash;}});}

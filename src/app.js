@@ -1,3 +1,4 @@
+import {createWeatherProvider} from './adapters/weather.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './tokens.css';
 import './design-system.css';
@@ -31,7 +32,7 @@ const tour=createTourService({catalog,search:localSearch,logger});
  const courseService=createBoardCourses({community:courseCommunity,members});
  const board=createBoard({posts:createStore(localStorage,'tripflow.posts',[],validPosts),members,samples:samplePosts});
  // Composition root: future providers are injected here, inside the same application.
- mountApp(document.querySelector('#app'),{tour,members,board,courseCommunity,courseService,mode,mapMode:import.meta.env.VITE_MAP_MODE,mapKey:import.meta.env.VITE_KAKAO_MAP_APP_KEY,tourPreview:catalog.preview,assistant:unavailableAssistant});
+ mountApp(document.querySelector('#app'),{tour,members,board,courseCommunity,courseService,weather:createWeatherProvider({mode}),mode,mapMode:import.meta.env.VITE_MAP_MODE,mapKey:import.meta.env.VITE_KAKAO_MAP_APP_KEY,tourPreview:catalog.preview,assistant:unavailableAssistant});
  installMotion(document.querySelector('#app'));
  logger.record('app.started',{mode});
 } catch(error){document.querySelector('#app').textContent=`앱을 시작하지 못했습니다. ${error.message}`;}

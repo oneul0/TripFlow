@@ -1,0 +1,11 @@
+import {it,expect,vi,afterEach} from 'vitest';
+import {mountCourseWeather} from '../src/course-weather-ui.js';
+import {resolveStation} from '../src/modules/course-weather.js';
+import {ticketSVG} from '../src/course-ticket.js';
+import {createCourseCommunity} from '../src/modules/course-community.js';
+let panel;afterEach(()=>{panel?.destroy();document.body.replaceChildren();localStorage.clear();});
+const draft=()=>({title:'날씨 여행',input:{tripDate:'2026-10-02',blockEditor:true},stops:[{id:'5',title:'국립중앙박물관',area:'1',tags:[],stay:60,cost:0}]});
+const weather=()=>({date:'2026-10-02',stationId:resolveStation(draft().stops[0]).id,stationName:'(서울)국립중앙박물관',mode:'sample',fetchedAt:'2026-10-02T00:00Z',status:'ready',slots:[{time:'09:00',sky:'1',temperature:22,pop:10}]});
+it('WTH01 이탈 시 취소하고 늦은 결과를 반영하지 않는다',async()=>{document.body.innerHTML='<div id="w"></div>';let resolve,signal;const onResult=vi.fn();panel=mountCourseWeather(document.querySelector('#w'),{draft:draft(),onDate:vi.fn(),onBusy:vi.fn(),onResult,provider:{forecast:o=>{signal=o.signal;return new Promise(r=>resolve=r);}}});panel.destroy();expect(signal.aborted).toBe(true);resolve(weather());await Promise.resolve();expect(onResult).not.toHaveBeenCalled();});
+it('WTH05 저장·공유·복사 후 날짜와 예보 스냅샷 및 티켓 이모지를 유지한다',()=>{const d=draft();d.input.weather=weather();const service=createCourseCommunity(localStorage),saved=service.savePlan('fixture',d),published=service.publish('fixture',saved.id,saved.version),copy=service.copy('fixture2',published.id);expect(copy.input.tripDate).toBe('2026-10-02');expect(copy.input.weather).toEqual(d.input.weather);const svg=ticketSVG(copy).svg;expect(svg).toContain('☀️');expect(svg).toContain('09:00');expect(svg).toContain('샘플 예보');expect(svg).toContain('22°');});
+it('WTH01 오류는 재시도 가능하고 원문은 화면에 표시하지 않는다',async()=>{document.body.innerHTML='<div id="w"></div>';const d=draft();const forecast=vi.fn().mockRejectedValueOnce(Error('secret')).mockResolvedValueOnce(weather());panel=mountCourseWeather(document.querySelector('#w'),{draft:d,onDate:vi.fn(),onResult:w=>d.input.weather=w,onBusy:vi.fn(),provider:{forecast}});await vi.waitFor(()=>expect(document.body.textContent).toContain('다시 시도'));expect(document.body.textContent).not.toContain('secret');document.querySelector('button').click();await vi.waitFor(()=>expect(document.body.textContent).toContain('22°'));});
