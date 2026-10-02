@@ -1,3 +1,4 @@
+import {mountBoard} from './board-ui.js';
 import {mountCourses} from './course-ui.js';
 import {mountClassification} from './classification-ui.js';
 import {areas,types} from './adapters/catalog.js';
@@ -9,7 +10,7 @@ const options=map=>Object.entries(map).map(([value,label])=>`<option value="${va
 function field(name,label,type='text',autocomplete='',value=''){
  return `<div class="mb-3"><label class="form-label" for="account-${name}">${label}</label><input class="form-control" id="account-${name}" name="${name}" type="${type}" autocomplete="${autocomplete}" value="${escape(value)}" required ${type==='password'?'minlength="8" maxlength="128"':''}></div>`;
 }
-export function mountApp(root,{tour,members,mode,mapMode='sample',mapKey='',tourPreview}) {
+export function mountApp(root,{tour,members,board,courseCommunity,courseService,mode,mapMode='sample',mapKey='',tourPreview}) {
  root.innerHTML=`
  <header class="site-header"><a class="brand" href="#"><span class="brand-mark">e<span>✦</span></span>EnjoyTrip<span class="brand-dot">.</span></a><nav aria-label="주 메뉴"><a class="nav-active" href="#explore">여행지 탐색</a><a href="#about">서비스 소개</a></nav><div id="account-nav" class="account-nav"></div></header>
  <main><section class="hero"><div class="hero-copy"><p class="eyebrow">THE WEEKEND IS YOURS</p><h1>이번 주말,<br>어디든 <em>좋아.</em></h1><p class="hero-description">바다로, 골목으로, 낯선 도시로.<br>마음이 먼저 떠나는 여행을 찾아보세요.</p><a class="hero-link" href="#explore">여행지 둘러보기 <span>↗</span></a><div class="hero-edition"><span>LOCAL TRAVEL CLUB</span><span>VOL. 01 — 가을의 시작</span></div></div><div class="hero-landscape" role="img" aria-label="제주 해안을 모티프로 생성한 여행 이미지"><div class="destination-stamp">다음 목적지<br><strong>JEJU</strong><span>33.45° N / 126.53° E</span></div><div class="landscape-label"><span>GO SOMEWHERE NEW.</span><strong>길 끝에서 만나는 바다.</strong><small>AI 생성 여행 이미지</small></div></div></section>
@@ -107,13 +108,14 @@ export function mountApp(root,{tour,members,mode,mapMode='sample',mapKey='',tour
  searchForm.elements.area.addEventListener('change',()=>{explorer.clearSelection();search();});
  root.querySelector('#reset-search').addEventListener('click',()=>{searchForm.reset();classification.reset();explorer.clearSelection();search();});
  const dialog=root.querySelector('#account-dialog'),panel=root.querySelector('#account-panel'),nav=root.querySelector('#account-nav');
+ let accountChanged=()=>{};
  function renderNav(){
   let user;try{user=members.current();}catch(error){status.textContent=error.message;}
   nav.innerHTML=user?`<button type="button" data-account="profile">내 정보</button><button type="button" data-account="logout">로그아웃</button>`:`<button type="button" data-account="login">로그인</button><button class="join-button" type="button" data-account="register">회원가입</button>`;
  }
  function openAccount(view){renderAccount(view);if(!dialog.open){if(dialog.showModal)dialog.showModal();else dialog.setAttribute('open','');}}
  root.querySelector('#close-account').addEventListener('click',()=>dialog.close());
- nav.addEventListener('click',event=>{const view=event.target.closest('[data-account]')?.dataset.account;if(!view)return;if(view==='logout'){try{members.logout();renderNav();dialog.close();}catch(error){status.textContent=error.message;}}else openAccount(view);});
+ nav.addEventListener('click',event=>{const view=event.target.closest('[data-account]')?.dataset.account;if(!view)return;if(view==='logout'){try{members.logout();renderNav();accountChanged();dialog.close();}catch(error){status.textContent=error.message;}}else openAccount(view);});
  function renderAccount(view){
   const titles={login:'다시 만나 반가워요',register:'여행의 시작, EnjoyTrip',reset:'비밀번호 찾기',profile:'내 여행 프로필'};
   let user;try{user=members.current();}catch(error){panel.textContent=error.message;return;}
@@ -134,7 +136,7 @@ export function mountApp(root,{tour,members,mode,mapMode='sample',mapKey='',tour
      const account=await members.register(values);form.reset();message.innerHTML=`가입했습니다. 아래 복구 코드를 안전하게 보관하세요.<br><code id="recovery-code">${escape(account.recoveryCode)}</code><br>이 코드는 이 화면에서만 확인할 수 있습니다.`;
      root.dispatchEvent(new CustomEvent('enjoytrip:success',{detail:{target:button}}));
     }
-    if(view==='login'){await members.login(values.email,values.password);renderNav();dialog.close();}
+    if(view==='login'){await members.login(values.email,values.password);renderNav();dialog.close();accountChanged();}
     if(view==='profile'){members.update(values.name);message.textContent='정보를 저장했습니다.';renderNav();}
     if(view==='reset'){await members.reset(values.email,values.recoveryCode,values.password);form.reset();message.textContent='비밀번호를 재설정했습니다. 다시 로그인해주세요.';renderNav();}
    }catch(error){message.textContent=error.message;message.className='text-danger';}
@@ -142,11 +144,15 @@ export function mountApp(root,{tour,members,mode,mapMode='sample',mapKey='',tour
   });
   panel.querySelector('#delete-form')?.addEventListener('submit',async event=>{
    event.preventDefault();const form=event.currentTarget,button=form.querySelector('button');if(button.disabled)return;button.disabled=true;
-   try{await members.remove(new FormData(form).get('password'));renderNav();dialog.close();status.textContent='회원 탈퇴가 완료되었습니다.';}catch(error){message.textContent=error.message;}finally{button.disabled=false;}
+   try{await members.remove(new FormData(form).get('password'));renderNav();dialog.close();accountChanged();status.textContent='회원 탈퇴가 완료되었습니다.';}catch(error){message.textContent=error.message;}finally{button.disabled=false;}
   });
  }
  renderNav();search();
- const courses=mountCourses(root);
- const navigation=mountNavigation(root,{showCandidate:id=>randomTrip.showCandidate(id),closeCandidate:()=>randomTrip.closeCandidate(),onPage:(page,hash)=>{if(page==='random-trip')randomTrip.activate();courses.render(page,hash);}});
- return {search,destroy(){navigation.destroy();courses.destroy();controller?.abort();request++;clearTimeout(mapTimer);mapController?.abort();mapRequest++;explorer.destroy();randomTrip.destroy();}};
+ const courses=mountCourses(root,{members,community:courseCommunity});
+ let boardUI;
+ if(board){const boardRoot=document.createElement('section');boardRoot.id='board';boardRoot.className='board-page';boardRoot.dataset.appView='';boardRoot.dataset.depth='2';boardRoot.hidden=true;main.append(boardRoot);primaryNav.insertAdjacentHTML('beforeend','<a href="#board">여행 후기</a>');
+ boardUI=mountBoard(boardRoot,{board,members,courseService,onLogin:()=>openAccount('login'),navigate:hash=>{if(location.hash.slice(1)===hash)boardUI.render(hash);else location.hash=hash;}});}
+ accountChanged=()=>{courses.accountChanged();if(root.dataset.currentPage==='board')boardUI?.refresh();};
+ const navigation=mountNavigation(root,{showCandidate:id=>randomTrip.showCandidate(id),closeCandidate:()=>randomTrip.closeCandidate(),onPage:(page,hash)=>{if(page==='random-trip')randomTrip.activate();courses.render(page,hash);if(page==='board')boardUI?.render(hash);else boardUI?.leave?.();}});
+ return {search,destroy(){navigation.destroy();courses.destroy();boardUI?.destroy();controller?.abort();request++;clearTimeout(mapTimer);mapController?.abort();mapRequest++;explorer.destroy();randomTrip.destroy();}};
 }
