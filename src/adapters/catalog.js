@@ -1,3 +1,4 @@
+import {tourFilters,internalRegions} from './tour-codes.js';
 import {samplePlaces} from '../data/places.js';
 export const areas={'1':'서울','2':'인천','3':'대전','4':'대구','5':'광주','6':'부산','7':'울산','8':'세종','31':'경기','32':'강원','33':'충북','34':'충남','35':'경북','36':'경남','37':'전북','38':'전남','39':'제주'};
 export const types={'12':'관광지','14':'문화시설','15':'공연·축제','25':'여행코스','28':'레포츠','32':'숙박','38':'쇼핑','39':'음식점'};
@@ -6,12 +7,14 @@ export function createSampleCatalog(){return {async list({area='',type='',signal
 },async preview({area='',signal}={}){signal?.throwIfAborted();const places=samplePlaces.filter(p=>p.areaCode===area);return {places:places.slice(0,20),totalCount:places.length,partial:places.length>20,mode:'sample'};}};}
 function normalize(row){
   if(!row.contentid||typeof row.title!=='string') throw Error('관광 API 데이터 형식이 올바르지 않습니다.');
-  return {contentId:String(row.contentid),title:row.title,address:[row.addr1,row.addr2].filter(Boolean).join(' '),areaCode:String(row.areacode??''),sigunguCode:String(row.sigungucode??''),contentTypeId:String(row.contenttypeid??''),imageUrl:row.firstimage||'',latitude:row.mapy?Number(row.mapy):undefined,longitude:row.mapx?Number(row.mapx):undefined};
+  const lat=Number(row.mapy),lon=Number(row.mapx);
+  const validCoordinates=!!row.mapy&&!!row.mapx&&Number.isFinite(lat)&&Number.isFinite(lon)&&Math.abs(lat)<=90&&Math.abs(lon)<=180;
+  return {contentId:String(row.contentid),title:row.title,address:[row.addr1,row.addr2].filter(Boolean).join(' '),areaCode:internalRegions[String(row.lDongRegnCd)]??'',sigunguCode:'',legalRegionCode:String(row.lDongRegnCd??''),legalDistrictCode:String(row.lDongSignguCd??''),classification:{large:String(row.lclsSystm1??''),middle:String(row.lclsSystm2??''),small:String(row.lclsSystm3??'')},contentTypeId:String(row.contenttypeid??''),imageUrl:row.firstimage||'',latitude:validCoordinates?lat:undefined,longitude:validCoordinates?lon:undefined};
 }
 export function createTourApiCatalog({key,fetcher=fetch,pageSize=100,baseUrl='https://apis.data.go.kr/B551011/KorService2/'}) {
   return {async preview({area,signal}={}){
     signal?.throwIfAborted();if(!areas[area])throw Error('관광정보를 조회할 시도를 선택해주세요.');
-    const url=new URL('areaBasedList2',baseUrl);url.search=new URLSearchParams({serviceKey:key,MobileOS:'ETC',MobileApp:'EnjoyTrip',_type:'json',numOfRows:'20',pageNo:'1',arrange:'A',areaCode:area}).toString();
+    const url=new URL('areaBasedList2',baseUrl);url.search=new URLSearchParams({serviceKey:key,MobileOS:'ETC',MobileApp:'EnjoyTrip',_type:'json',numOfRows:'20',pageNo:'1',arrange:'A',...tourFilters({area})}).toString();
     let response;try{response=await fetcher(url.toString(),{signal});}catch(error){if(error.name==='AbortError')throw error;throw Error('관광정보 조회에 실패했습니다. 다시 시도해주세요.');}
     if(!response.ok)throw Error('관광정보 조회에 실패했습니다. 다시 시도해주세요.');
     let data;try{data=(await response.json()).response;}catch{throw Error('관광 API 응답을 읽을 수 없습니다.');}
@@ -21,12 +24,14 @@ export function createTourApiCatalog({key,fetcher=fetch,pageSize=100,baseUrl='ht
     if(totalCount>0&&!items.length)throw Error('관광 API 페이지 데이터가 누락되었습니다.');
     const places=[...new Map(items.map(normalize).map(p=>[p.contentId,p])).values()];
     return {places,totalCount,partial:totalCount>places.length,mode:'live'};
-  },async list({area='',type='',signal}={}) {
+  },async list({area='',type='',classification,signal}={}) {
+    signal?.throwIfAborted();
+    const filters=tourFilters({area,type,classification});
     const result=[];
     for(let page=1;page<=10;page++) {
       const url=new URL('areaBasedList2',baseUrl);
       const params={serviceKey:key,MobileOS:'ETC',MobileApp:'EnjoyTrip',_type:'json',numOfRows:String(pageSize),pageNo:String(page),arrange:'A'};
-      if(area) params.areaCode=area;if(type) params.contentTypeId=type;
+      Object.assign(params,filters);
       url.search=new URLSearchParams(params).toString();
       let response;
       try{response=await fetcher(url.toString(),{signal});}catch(error){if(error.name==='AbortError')throw error;throw Error('관광정보 조회에 실패했습니다. 다시 시도해주세요.');}

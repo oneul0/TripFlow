@@ -28,3 +28,6 @@
 코스 당일 합성 구현: tests/course-core.test.js, tests/course-boundaries.test.js, tests/course-ui.test.js, e2e/course-sharing.spec.js. 실제 구현/미구현 경계는 [CRS 매핑](features/course-recommendation.md#당일-샘플-검증-매핑)을 따른다. 위 '미작성' 기록은 최초 설계 시점이며 이 섹션이 최신이다.
 
 UX-CRS-01~04: tests/course-simplification.test.js, e2e/course-sharing.spec.js — 첫 입력 축소, 선택 조건 접기/보존, 기본 점수 미표시, 편집 제어 숨김, 세션 조건 재사용.
+DS-02 디자인 개선: docs/design-system.md에 계획·적용범위·잔여 작업 기록. tests/design-navigation.test.js로 내 여행 지역 후보 탭 검증; 전체 harness 73개 단위·DOM, 23개 E2E 통과.
+
+| TOUR-44 | 법정동 코드 변환·신분류 계약·잘못된 좌표 | tests/tour-v44.test.js, tests/catalog.test.js, tests/tour-preview.test.js | 합성 응답, live 별도 검증 |
