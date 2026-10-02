@@ -1,6 +1,6 @@
 /**
  * @typedef {{contentId:string,title:string,address:string,areaCode:string,sigunguCode?:string,contentTypeId:string,imageUrl?:string,latitude?:number,longitude?:number}} Place
- * @typedef {{list:(filters:{area?:string,type?:string,signal?:AbortSignal})=>Promise<Place[]>}} Catalog
+ * @typedef {{list:(filters:{area?:string,type?:string,signal?:AbortSignal})=>Promise<Place[]>,preview:(filters:{area:string,signal?:AbortSignal})=>Promise<{places:Place[],totalCount:number,partial:boolean,mode:'sample'|'live'}>}} Catalog
  * @typedef {{find:(places:Place[],options:{query?:string,signal?:AbortSignal})=>Promise<Place[]>}} Search
  * @typedef {{record:(event:string,fields?:{count?:number,mode?:string})=>void}} Logger
  * @typedef {{status:'available'|'unavailable',items:{contentId:string,reason:string}[]}} Recommendation

@@ -21,6 +21,7 @@ export async function createKakaoMap(container,{key,regions,onRegion,onPlace,onM
  const canvas=document.createElement('canvas');canvas.className='density-layer';canvas.setAttribute('aria-hidden','true');
  container.replaceChildren(surface,canvas);
  const map=new maps.Map(surface,{center:new maps.LatLng(37.5665,126.978),level:8});
+ if(maps.MapTypeControl&&maps.ZoomControl&&map.addControl){map.addControl(new maps.MapTypeControl(),maps.ControlPosition.TOPRIGHT);map.addControl(new maps.ZoomControl(),maps.ControlPosition.RIGHT);}
  const clusterer=new maps.MarkerClusterer({map,averageCenter:true,minLevel:7});
  let state={regions:regions.map(r=>({...r,places:[],count:0,intensity:0})),selectedRegion:null,selectedPlace:null},markers=[],polygons=[],listeners=[],dead=false,frame;
  const listen=(target,name,fn)=>{maps.event.addListener(target,name,fn);listeners.push(()=>maps.event.removeListener(target,name,fn));};

@@ -2,6 +2,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './tokens.css';
 import './design-system.css';
 import './map.css';
+import './random-trip.css';
+import './navigation.css';
 import {installMotion} from './motion.js';
 import {createSampleCatalog,createTourApiCatalog} from './adapters/catalog.js';
 import {localSearch,createLogger,unavailableAssistant} from './adapters/extensions.js';
@@ -17,7 +19,7 @@ const catalog=key?createTourApiCatalog({key,baseUrl:import.meta.env.VITE_TOUR_AP
 const tour=createTourService({catalog,search:localSearch,logger});
  const members=createMembers({accounts:createStore(localStorage,'enjoytrip.accounts',[],validAccounts),session:createStore(sessionStorage,'enjoytrip.session',null,validSession)});
  // Composition root: future providers are injected here, inside the same application.
- mountApp(document.querySelector('#app'),{tour,members,mode,mapMode:import.meta.env.VITE_MAP_MODE,mapKey:import.meta.env.VITE_KAKAO_MAP_APP_KEY,assistant:unavailableAssistant});
+ mountApp(document.querySelector('#app'),{tour,members,mode,mapMode:import.meta.env.VITE_MAP_MODE,mapKey:import.meta.env.VITE_KAKAO_MAP_APP_KEY,tourPreview:catalog.preview,assistant:unavailableAssistant});
  installMotion(document.querySelector('#app'));
  logger.record('app.started',{mode});
 } catch(error){document.querySelector('#app').textContent=`앱을 시작하지 못했습니다. ${error.message}`;}
