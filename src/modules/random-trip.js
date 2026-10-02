@@ -1,12 +1,11 @@
 import {pointInGeometry} from './regions.js';
-export {simulateThrow} from '../adapters/throw-physics.js';
+export {simulateThrow,THROW_ORIGIN} from '../adapters/throw-physics.js';
 const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
 export function gestureThrow(samples){
  if(samples.length<2)return null;
  const end=samples.at(-1),recent=samples.filter(p=>end.t-p.t<=120);if(recent.length<2)return null;
- const start=recent[0],dt=(end.t-start.t)/1000;if(dt<=0)return null;
- const vx=(end.x-start.x)/dt*.35,vy=(end.y-start.y)/dt*.35;
- if(vy>-35||Math.hypot(vx,vy)<45)return null;
+ const start=samples[0];if(end.t<=start.t||end.y-start.y>-18)return null;
+ const vx=clamp((end.x-start.x)*1.1,-240,240),vy=-clamp((start.y-end.y)*1.8,80,380);
  return {vx,vy,spin:gestureSpin(samples).spin};
 }
 export function gestureSpin(samples){
@@ -32,4 +31,10 @@ export function createCandidateBag(storage){
   undo(){if(previous===null||error==='read')return;items=previous;previous=null;save();},
   retry:save,reset(){items=[];previous=null;error=null;save();}
  };
+}
+
+export function assistLanding(point,targets,radius=90){
+ let nearest=null,distance=radius;
+ for(const target of targets){const d=Math.hypot(point.x-target.x,point.y-target.y);if(d<distance&&target.x>=20&&target.x<=780&&target.y>=20&&target.y<=500){nearest=target;distance=d;}}
+ return nearest;
 }

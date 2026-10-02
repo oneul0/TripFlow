@@ -55,3 +55,15 @@ DS-02 디자인 개선: docs/design-system.md에 계획·적용범위·잔여 �
 | CB-07 360/768/1440px 최대3단계 | e2e/course-sharing.spec.js |
 
 검증 결과: harness107 단위·DOM /32 E2E /빌드 통과, rules:check15 통과. CRS의 점수·리뷰 핵심 테스트는 유지하고 이전 UI 표시 검증은 사용자 요청에 따라 CB 계약으로 대체했다.
+
+## RND-13~16 랜덤 여행 조작 개선
+
+- tests/random-gameplay.test.js: 극단 입력 보드 이탈 방지, 같은 거리 입력의 손속도 독립성, 근거리 육지 보정 범위.
+- tests/random-upgrade.test.js: 수직 보드 투영/역투영, 깊이에 따른 원근, quaternion 회전.
+- tests/random-trip-ui.test.js: 예상 착지점·지역명 UI 없음, 비행 잠금/취소/후보 저장.
+- e2e/random-trip.spec.js 및 random-upgrade.spec.js: 3개 화면 크기, 실제 마우스 쓸기, 제주/읍면동, 회전, 렌더러 크기.
+- 전체 harness111 단위·DOM/32 E2E/빌드 및 rules:check15 통과(2026-10-02).
+
+RND-17: tests/random-trip-ui.test.js의 포인터 이동량/잡기 오프셋/취소 복귀, tests/random-gameplay.test.js의 놓은 위치 발사 검증. 기존 실제 쓸기/스핀 E2E 유지.
+
+RND-18: tests/random-upgrade.test.js — 비행 투영 크기의 연속 감소/착지 지름 절반 이하/시작 공 위치 검증. 기존 포인터 집기와 발사 E2E 유지.

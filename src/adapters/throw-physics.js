@@ -1,20 +1,14 @@
 import {World,Body,Sphere,Plane,Vec3} from 'cannon-es';
-
-// Physics uses metres; the game's plane uses 100 display units per metre.
-export function simulateThrow({vx,vy,spin}){
- if(![vx,vy,spin].every(Number.isFinite))throw new Error('Invalid throw');
- const factor=Math.min(1,420/(Math.hypot(vx,vy)||1));spin=Math.max(-6,Math.min(6,spin));
- const world=new World({gravity:new Vec3(0,0,-2.8)});
- const ground=new Body({mass:0,shape:new Plane()});world.addBody(ground);
- const ball=new Body({mass:1,shape:new Sphere(.22),position:new Vec3(4,5.5,.221),velocity:new Vec3(vx*factor/100,vy*factor/100,2.3),angularVelocity:new Vec3(spin*.4,spin*.2,spin*5),linearDamping:0,angularDamping:.42});
- world.addBody(ball);let landed=false;ball.addEventListener('collide',event=>{if(event.body===ground)landed=true;});
- const snapshot=t=>({x:ball.position.x*100,y:ball.position.y*100,z:Math.max(0,(ball.position.z-.22)*100),t,quaternion:ball.quaternion.toArray()});
- const points=[snapshot(0)];points[0].z=0;
- for(let i=1;i<400;i++){
-  // Magnus-style game force; cannon integrates both translation and rotation.
-  const curve=ball.angularVelocity.z/5*.13;
-  ball.applyForce(new Vec3(-ball.velocity.y*curve,ball.velocity.x*curve,0));world.step(1/120);
-  const point=snapshot(i/120);if(landed){point.z=0;points.push(point);break;}points.push(point);
- }
+export const THROW_ORIGIN=Object.freeze({x:400,y:410,z:600});
+const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+// Board coordinates are centimetres. z is distance in front of the upright map.
+export function simulateThrow({vx,vy,spin,origin=THROW_ORIGIN}){
+ if(![vx,vy,spin,origin.x,origin.y,origin.z].every(Number.isFinite)||origin.z<=0)throw new Error('Invalid throw');
+ spin=clamp(spin,-6,6);const duration=.8,targetX=400+clamp(vx,-240,240),targetY=550+clamp(vy,-380,-80)*1.25;
+ const world=new World({gravity:new Vec3(0,1.8,0)}),board=new Body({mass:0,shape:new Plane()});world.addBody(board);
+ const ball=new Body({mass:1,shape:new Sphere(.22),position:new Vec3(origin.x/100,origin.y/100,origin.z/100+.22),velocity:new Vec3((targetX-origin.x)/100/duration,(targetY-origin.y)/100/duration-.5*1.8*duration,-origin.z/100/duration),angularVelocity:new Vec3(spin*.4,spin*.2,spin*5),linearDamping:0,angularDamping:.42});
+ world.addBody(ball);let landed=false;ball.addEventListener('collide',event=>{if(event.body===board)landed=true;});
+ const snapshot=t=>({x:ball.position.x*100,y:ball.position.y*100,z:Math.max(0,(ball.position.z-.22)*100),t,quaternion:ball.quaternion.toArray()});const points=[snapshot(0)];
+ for(let i=1;i<200;i++){ball.applyForce(new Vec3(ball.angularVelocity.z/5*.5,0,0));world.step(1/120);const point=snapshot(i/120);points.push(point);if(landed){point.z=0;break;}}
  return points;
 }

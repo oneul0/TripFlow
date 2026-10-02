@@ -14,3 +14,21 @@
 .random-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;border:0}.random-controls legend{font-size:12px;font-weight:600;float:none;width:auto}.random-controls label{display:grid;grid-template-columns:1fr auto;align-items:center;font-size:12px;gap:6px}.random-controls input{grid-row:2;grid-column:1/-1;width:100%;accent-color:#345f46}.random-controls output{grid-column:2;grid-row:1}.random-controls button{grid-column:1/-1;background:#254d3c;color:#fffdf0;font-weight:600;padding:13px}.random-source{font-size:11px;line-height:1.7;color:#6e7a6f;margin-top:16px}.random-bag{background:#fffdf7;border:1px solid #d8ddcf;border-radius:16px;padding:24px;scroll-margin-top:90px}.random-bag h3{font-size:20px;font-weight:700}.random-bag>p:not(.eyebrow){font-size:12px;color:#7b8378}.random-bag ul{list-style:none;padding:0;margin:24px 0}.random-bag li{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:14px 0;border-bottom:1px solid #e5e8dc;font-size:13px}.random-bag li span{overflow-wrap:anywhere}.random-bag li button{white-space:nowrap;font-size:11px}.random-bag li.random-empty{color:#7a8779;line-height:1.8;padding:30px 0}.random-bag [data-undo]{font-size:12px;width:100%}.random-bag [data-storage]{color:#945125;font-size:12px;line-height:1.7;margin-top:12px}
 @media(max-width:900px){.random-layout{grid-template-columns:1fr}.random-bag{padding:20px}.random-heading{align-items:start}.random-bag-link{font-size:12px;padding:10px}.random-trip{padding-top:40px;padding-bottom:40px}}
 @media(max-width:480px){.random-heading{display:block}.random-bag-link{display:inline-block;margin-top:6px}.random-toolbar{gap:8px}.random-toolbar label{flex:1;min-width:0}.random-toolbar select{width:100%;font-size:11px}.random-zoom{margin-left:0;width:100%;justify-content:flex-end}.random-stage-note{font-size:7px}.random-region-label{font-size:15px}.random-controls{gap:10px}}
+
+/* RND-13: upright arcade board, with depth reserved for the incoming ball. */
+.random-trip .random-stage{background:radial-gradient(ellipse at 50% 28%,#24485f 0%,#102336 64%,#091522 100%);border:3px solid #325369;box-shadow:inset 0 0 0 5px #162a3b,0 16px 36px #10233620;border-radius:22px}
+.random-trip .random-region{fill:#58a798;stroke:#bce6cc;stroke-width:1.1;transition:fill .15s}
+.random-trip .random-region:hover{fill:#86cbb2}.random-trip .random-region[data-selected=true]{fill:#ffce6b;stroke:#fff2b4;stroke-width:3}
+.random-trip .random-region-label{fill:#102f32;paint-order:stroke;stroke:#bce6cc;stroke-width:1.5px;font-size:12px}
+.random-stage-note{color:#9cc5d5;font-size:11px;letter-spacing:1px;top:16px;left:20px}
+.random-spin{color:#ffdc86;background:#081522aa;padding:8px 12px;border:1px solid #527082;border-radius:20px;font-size:12px}
+
+[data-impact]{opacity:0}[data-impact][data-active=true]{opacity:1}
+[data-impact][data-active=true] circle{animation:map-hit .6s ease-out both;transform-box:fill-box;transform-origin:center}
+@keyframes map-hit{from{transform:scale(.3);opacity:1}to{transform:scale(1.8);opacity:0}}
+.random-trip[data-shot=hit] .random-status{border-left:4px solid #2f8e72;background:#e2f2e7;padding:12px;border-radius:8px}
+.random-trip[data-shot=miss] .random-status{border-left:4px solid #d19c41;padding:12px;background:#fff3da;border-radius:8px}
+.random-controls [data-throw]{background:#25455d;border-bottom:4px solid #122c40;box-shadow:0 4px 0 #d4ddd9;font-size:16px}
+.random-controls [data-throw]:active{transform:translateY(2px);box-shadow:none}
+@media(max-width:480px){.random-stage-note{font-size:8px;left:12px;top:10px}.random-spin{right:8px;bottom:8px;font-size:10px;padding:6px}.random-trip .random-region-label{font-size:12px}}
+@media(prefers-reduced-motion:reduce){[data-impact][data-active=true] circle{animation:none}.random-trip .random-region{transition:none}.random-controls [data-throw]:active{transform:none}}
