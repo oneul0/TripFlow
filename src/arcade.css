@@ -1,0 +1,76 @@
+/* RND-STYLE-01 — scoped to the game, never the saved candidate screens. */
+#random-trip.random-standalone{position:relative;isolation:isolate;margin:24px 24px 48px;padding:32px;background:#ffda45;color:#171717;border:1px solid #edc943;border-radius:32px;box-shadow:0 8px 0 #e9b926;overflow:hidden}
+#random-trip::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 85% 0,#ff992a55,transparent 48%),radial-gradient(#1111110d 1px,transparent 1px);background-size:auto,20px 20px}
+#random-trip .random-heading{align-items:center;margin-bottom:20px;gap:24px}
+#random-trip .random-heading .eyebrow{color:#55441f;letter-spacing:2px;font-size:11px;margin-bottom:14px}
+#random-trip .random-heading h2{margin:0;letter-spacing:-1px;font-weight:800}
+.arcade-title{display:flex;align-items:center;gap:18px;color:#171717;font-family:Impact,'Arial Black',sans-serif;font-size:clamp(48px,6vw,76px);font-weight:900;letter-spacing:1px;line-height:1}
+.arcade-title>span{font-family:system-ui;color:#d80072;font-size:48px}
+.arcade-subtitle{display:block;font-size:22px;margin-top:14px;line-height:1.5;letter-spacing:-.7px}
+#random-trip .random-heading p:not(.eyebrow){color:#4b4025;font-size:14px;margin:8px 0 0;max-width:560px}
+#random-trip .random-bag-link{border:1px solid #181818;border-radius:12px;background:#f9c8e0;color:#171717;padding:14px 18px;box-shadow:0 4px 0 #bd7e9b;min-height:48px}
+#random-trip .random-bag-link strong{display:inline-grid;place-items:center;min-width:30px;min-height:30px;border-radius:8px;background:#eff792;color:#251c3e;margin-inline:8px}
+.arcade-howto{display:flex;flex-wrap:wrap;gap:8px 24px;margin-bottom:24px;color:#4b4025;font-size:13px}
+.arcade-howto span{display:flex;align-items:center;gap:8px}.arcade-howto b{color:#171717;font-size:11px;border:1px solid #bfa346;border-radius:6px;padding:3px 6px}
+#random-trip .random-play{grid-template-columns:minmax(0,1fr) 230px;gap:16px 24px;align-items:start}
+#random-trip .random-toolbar{padding:16px;background:#173b40;border:1px solid #315d62;border-radius:12px;margin:0;gap:12px}
+#random-trip .random-toolbar label{color:#d4eded;font-size:12px;flex:1;min-width:110px}
+#random-trip .random-toolbar select{background:#102e32;color:#fff;border-color:#698e90;border-radius:8px;width:100%;max-width:none;min-height:44px;font-size:14px}
+#random-trip button{background:#2b5358;border-color:#698e90;color:#fff;min-height:44px}
+#random-trip button:hover:not(:disabled){background:#386d73;border-color:#cee4d9}
+#random-trip button:focus-visible,#random-trip input:focus-visible,#random-trip select:focus-visible,#random-trip a:focus-visible{outline:3px solid #eff792;outline-offset:4px}
+#random-trip .random-zoom{color:#e8f2e7;font-variant-numeric:tabular-nums;margin-left:0;gap:10px}
+#random-trip .random-stage{grid-row:2/6;border:3px solid #fff5a9;border-bottom-width:8px;border-radius:16px;background:radial-gradient(ellipse at 50% 35%,#2d656b,#122e33 70%);box-shadow:0 0 0 5px #173b40,0 10px 0 #173b40;overflow:hidden}
+#random-trip .random-stage svg{aspect-ratio:4/3}
+#random-trip .random-stage-note{left:18px;top:15px;font-size:10px;color:#def3e8;letter-spacing:1.5px;display:flex;align-items:center;gap:8px;background:#16363be6;padding:7px 10px;border:1px solid #548387;border-radius:6px}
+.random-stage-note i{width:6px;height:6px;background:#eff792;border-radius:50%}
+#random-trip .random-region{fill:#b3cf77;stroke:#eaf4c4;stroke-width:1.2}
+#random-trip .random-region:hover{fill:#d6e69a}
+#random-trip .random-region[data-selected=true]{fill:#eff792;stroke:#fffbcf;stroke-width:3}
+#random-trip .random-region-label{fill:#f9ffef;stroke:#2f503b;stroke-width:2px;font-size:12px;letter-spacing:.3px}
+#random-trip .random-spin{background:#143238;border:1px solid #547f84;color:#eff792;border-radius:8px;bottom:16px;right:16px;font-size:12px}
+#random-trip .random-status{grid-row:2;background:#fff8d8;color:#292519;border:0;border-radius:12px;padding:20px;margin:0;font-size:15px;line-height:1.8;min-height:130px;overflow-wrap:anywhere}
+#random-trip .random-status::before{content:'이번 여행의 목적지는?';display:block;font-size:12px;font-weight:700;letter-spacing:.3px;margin-bottom:10px;color:#6b582b}
+#random-trip[data-shot=hit] .random-status{background:#eff792;color:#23310f;border:0}
+#random-trip[data-shot=hit] .random-status::before{content:'NICE SHOT!';color:#38531b}
+#random-trip[data-shot=miss] .random-status{background:#ffe4c6;color:#512b15;border:0}
+#random-trip[data-shot=miss] .random-status::before{content:'한 번 더 도전!';color:#784323}
+#random-trip .random-controls{grid-row:3;gap:16px;margin:0;padding:20px;border:1px solid #527b80;border-radius:12px;background:#173b40;min-width:0}
+#random-trip .random-controls legend{color:#f5f7e9;font-size:15px;margin:0 0 6px;padding:0;float:left;width:100%}
+.arcade-console-label{display:block;color:#b5d5d4;font-size:10px;letter-spacing:1.5px;margin-bottom:4px}
+#random-trip .random-controls label{font-size:13px;margin:0;color:#ebf6f0;gap:0 8px}
+#random-trip .random-controls output{font-variant-numeric:tabular-nums;color:#eff792}
+#random-trip .random-controls input{accent-color:#f9c8e0;min-height:32px}
+#random-trip .random-controls [data-throw]{background:#eff792;color:#253316;border:0;border-bottom:4px solid #9cab58;box-shadow:0 4px 0 #08272c;font-size:17px;min-height:54px;margin-top:4px;border-radius:10px}
+#random-trip .random-controls [data-throw]:hover:not(:disabled){background:#edffac;color:#253316}
+#random-trip .random-source{color:#5b4a2a;font-size:12px;margin:8px 0 0}
+#random-trip [data-availability]{padding:12px;background:#fff0a1;border-radius:10px}
+@media(max-width:900px){
+ #random-trip.random-standalone{margin:20px;padding:24px}
+ #random-trip .random-play{grid-template-columns:minmax(0,1fr) 200px;gap:16px}
+ #random-trip .random-controls{padding:16px}
+}
+@media(max-width:700px){
+ #random-trip.random-standalone{margin:16px 12px 32px;padding:20px 16px;border-radius:20px}
+ #random-trip .random-heading{display:block;margin-bottom:16px}.arcade-title{font-size:52px}.arcade-subtitle{font-size:20px}
+ #random-trip .random-bag-link{display:inline-flex;align-items:center;margin-top:16px;padding:8px 14px}
+ .arcade-howto{gap:8px 12px;font-size:12px;margin-bottom:16px}
+ #random-trip .random-play{display:flex;flex-direction:column;gap:18px}
+ #random-trip .random-play>*{width:100%;min-width:0}
+ #random-trip .random-toolbar{padding:12px;gap:10px}
+ #random-trip .random-toolbar label{flex:1 1 40%;min-width:0}
+ #random-trip .random-toolbar [data-back]{flex:1 1 40%}
+ #random-trip .random-zoom{width:auto;justify-content:center;margin:auto}
+ #random-trip .random-stage-note{font-size:7px;top:8px;left:8px;padding:4px 6px;letter-spacing:.8px}
+ #random-trip .random-spin{font-size:10px;bottom:8px;right:8px;padding:6px}
+ #random-trip .random-status{min-height:0;padding:16px;font-size:14px}
+ #random-trip .random-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:16px}
+ #random-trip .random-controls legend{float:none}.arcade-console-label{display:inline;margin-right:8px}
+ #random-trip .random-controls label{display:grid;grid-template-columns:1fr auto;font-size:12px}
+ #random-trip .random-controls [data-throw]{grid-column:1/-1}
+ #random-trip .random-source{margin:0;font-size:11px}
+}
+
+#random-trip[data-holding=true] .random-stage{border-color:#eff792;box-shadow:0 0 0 5px #173b40,0 0 24px #f9c8e055}
+#random-trip[data-holding=true] .random-ground-svg,#random-trip[data-holding=true] [data-ball]{cursor:grabbing!important}
+#random-trip [data-held-glow]{filter:drop-shadow(0 0 5px #eff792);opacity:.8}

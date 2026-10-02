@@ -23,7 +23,7 @@ export async function createKakaoMap(container,{key,regions,onRegion,onPlace,onM
  const map=new maps.Map(surface,{center:new maps.LatLng(37.5665,126.978),level:8});
  if(maps.MapTypeControl&&maps.ZoomControl&&map.addControl){map.addControl(new maps.MapTypeControl(),maps.ControlPosition.TOPRIGHT);map.addControl(new maps.ZoomControl(),maps.ControlPosition.RIGHT);}
  const clusterer=new maps.MarkerClusterer({map,averageCenter:true,minLevel:7});
- let state={regions:regions.map(r=>({...r,places:[],count:0,intensity:0})),selectedRegion:null,selectedPlace:null},markers=[],polygons=[],listeners=[],dead=false,frame;
+ let state={regions:regions.map(r=>({...r,places:[],count:0,intensity:0})),selectedRegion:null,selectedPlace:null},markers=[],polygons=[],listeners=[],dead=false,frame,pendingFit=null;
  const listen=(target,name,fn)=>{maps.event.addListener(target,name,fn);listeners.push(()=>maps.event.removeListener(target,name,fn));};
  const selection=document.createElement('div');selection.className='selected-map-label';
  const selectedOverlay=new maps.CustomOverlay({content:selection,yAnchor:1.7,zIndex:5});
@@ -40,7 +40,7 @@ export async function createKakaoMap(container,{key,regions,onRegion,onPlace,onM
   ctx.clearRect(0,0,canvas.width,canvas.height);ctx.globalAlpha=.48;ctx.drawImage(offscreen,0,0);
  }
  function schedule(){cancelAnimationFrame(frame);frame=requestAnimationFrame(draw);}
- function fit(items){const b=boundsOf(items);map.setBounds(new maps.LatLngBounds(new maps.LatLng(b.south,b.west),new maps.LatLng(b.north,b.east)),24,24,24,24);schedule();}
+ function fit(items){pendingFit=items;if(dead||!container.clientWidth||!container.clientHeight)return;pendingFit=null;const b=boundsOf(items);map.setBounds(new maps.LatLngBounds(new maps.LatLng(b.south,b.west),new maps.LatLng(b.north,b.east)),24,24,24,24);schedule();}
  function update(next){
   state=next;
   // Geometry is immutable, so keep polygon listeners instead of duplicating them on every filter.
@@ -65,7 +65,7 @@ export async function createKakaoMap(container,{key,regions,onRegion,onPlace,onM
  }
  listen(map,'bounds_changed',schedule);listen(map,'zoom_start',()=>{canvas.style.visibility='hidden';});
  listen(map,'idle',()=>{canvas.style.visibility='';schedule();onMove?.();});
- const resize=typeof ResizeObserver==='function'?new ResizeObserver(()=>{map.relayout();schedule();}):null;resize?.observe(container);
+ const resize=typeof ResizeObserver==='function'?new ResizeObserver(()=>{if(dead||!container.clientWidth||!container.clientHeight)return;const center=map.getCenter();map.relayout();if(pendingFit)fit(pendingFit);else map.setCenter(center);schedule();}):null;resize?.observe(container);
  update(state);fit(regions);
  return {update,focusRegion(id){fit(id?regions.filter(r=>r.id===id):regions);},focusPlace(place){map.panTo(new maps.LatLng(place.latitude,place.longitude));},getBounds(){const b=map.getBounds(),sw=b.getSouthWest(),ne=b.getNorthEast();return {west:sw.getLng(),south:sw.getLat(),east:ne.getLng(),north:ne.getLat()};},destroy(){dead=true;cancelAnimationFrame(frame);resize?.disconnect();listeners.forEach(off=>off());for(const {marker,handler} of markers)maps.event.removeListener(marker,'click',handler);clusterer.clear();polygons.forEach(({polygon})=>polygon.setMap(null));selectedOverlay.setMap(null);container.replaceChildren();}};
 }

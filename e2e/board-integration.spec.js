@@ -6,7 +6,7 @@ async function login(page){
 }
 for(const width of [360,768,1440])test(`F110-COURSE 저장 코스→후기→복원 ${width}`,async({page})=>{
  await page.setViewportSize({width,height:900});await page.goto('/#home');await login(page);
- await page.goto('/#course-editor');await page.getByText('샘플 코스로 시작하기',{exact:true}).click();await page.getByLabel('목적 지역',{exact:true}).selectOption('1');await page.getByRole('button',{name:'코스 추천받기',exact:true}).click();await page.getByRole('button',{name:'이 코스 저장',exact:true}).click();
+ await page.goto('/#course-editor');await page.getByText('샘플 코스로 시작하기',{exact:true}).click();await page.getByLabel('목적 지역',{exact:true}).selectOption('1');await page.getByRole('button',{name:'코스 추천받기',exact:true}).click();await page.getByRole('button',{name:'코스 생성',exact:true}).click();
  await page.getByRole('button',{name:'후기로 공유',exact:true}).click();await expect(page).toHaveURL(/#board\/write\?courseId=/);
  await expect(page.locator('[data-attachment-status]')).toHaveText('코스를 첨부했습니다.');
  const before=await page.locator('[data-attachment-preview] li').allTextContents();expect(before.length).toBeGreaterThan(0);

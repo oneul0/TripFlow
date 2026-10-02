@@ -6,6 +6,8 @@ import './random-trip.css';
 import './navigation.css';
 import './course.css';
 import './board.css';
+import './editorial.css';
+import './arcade.css';
 import {createBoard,validPosts} from './modules/board.js';
 import {samplePosts} from './data/board-posts.js';
 import {createCourseCommunity} from './modules/course-community.js';

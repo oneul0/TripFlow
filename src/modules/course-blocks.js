@@ -1,9 +1,9 @@
 import {createStore} from '../adapters/storage.js';
 const bounded=(n,max)=>n===null||(Number.isFinite(n)&&n>=0&&n<=max);
-export function validBlock(s){return !!s&&typeof s.id==='string'&&s.id.length>0&&s.id.length<=128&&typeof s.title==='string'&&s.title.trim().length>0&&s.title.length<=200&&typeof s.area==='string'&&Array.isArray(s.tags)&&s.tags.every(t=>typeof t==='string')&&(s.stay===null||Number.isInteger(s.stay)&&s.stay>0&&s.stay<=1440)&&bounded(s.cost,10000000)&&(s.source===undefined||['sample','tourapi'].includes(s.source))&&(s.incomingMinutes===undefined||bounded(s.incomingMinutes,1440))&&(s.incomingCost===undefined||bounded(s.incomingCost,10000000));}
+export function validBlock(s){return !!s&&typeof s.id==='string'&&s.id.length>0&&s.id.length<=128&&typeof s.title==='string'&&s.title.trim().length>0&&s.title.length<=200&&typeof s.area==='string'&&(s.address===undefined||typeof s.address==='string'&&s.address.length<=1000)&&Array.isArray(s.tags)&&s.tags.every(t=>typeof t==='string')&&(s.stay===null||Number.isInteger(s.stay)&&s.stay>0&&s.stay<=1440)&&bounded(s.cost,10000000)&&(s.source===undefined||['sample','tourapi'].includes(s.source))&&(s.incomingMinutes===undefined||bounded(s.incomingMinutes,1440))&&(s.incomingCost===undefined||bounded(s.incomingCost,10000000));}
 export function toBlock(place,source){
  const contentId=String(place.contentId??'');
- const block={id:source==='tourapi'?`tourapi:${contentId}`:contentId,contentId,source,title:place.title,area:String(place.areaCode??''),category:String(place.contentTypeId??''),tags:[],stay:null,cost:null,incomingMinutes:null,incomingCost:null};
+ const block={id:source==='tourapi'?`tourapi:${contentId}`:contentId,contentId,source,title:place.title,address:place.address??'',area:String(place.areaCode??''),category:String(place.contentTypeId??''),tags:[],stay:null,cost:null,incomingMinutes:null,incomingCost:null};
  if(!contentId||!validBlock(block)||!['sample','tourapi'].includes(source))throw Error('장소 정보를 확인해주세요.');return block;
 }
 export function createCandidateBag(storage){

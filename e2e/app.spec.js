@@ -3,7 +3,7 @@ test.beforeEach(async({context})=>{
  await context.route('**/*',route=>new URL(route.request().url()).origin==='http://127.0.0.1:5174'?route.continue():route.abort());
 });
 test('회원 전체 흐름과 관광 검색',async({page})=>{
- await page.goto('/');await page.locator('.primary-nav a[href="#explore"]').click();await expect(page.getByText('샘플 데이터 모드',{exact:false}).first()).toBeVisible();
+ await page.goto('/');await page.locator('.primary-nav a[href="#explore"]').click();await expect(page.locator('.mode-badge')).toHaveText('샘플');
  await page.getByLabel('지역',{exact:true}).selectOption('39');await page.getByLabel('콘텐츠 유형').selectOption('39');await page.getByRole('button',{name:'여행지 찾기'}).click();await expect(page.locator('#results')).toContainText('제주');
  await page.getByRole('button',{name:'회원가입',exact:true}).click();
  await page.getByLabel('이름',{exact:true}).fill('테스트회원');await page.getByLabel('이메일',{exact:true}).fill('test@example.com');await page.getByLabel('비밀번호',{exact:true}).fill('password123');await page.getByLabel('비밀번호 확인').fill('password123');await page.getByRole('button',{name:'가입하기'}).click();

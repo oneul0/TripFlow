@@ -44,3 +44,12 @@
 .course-card .block-totals{gap:12px}.course-card .block-totals strong{font-size:16px}
 .place-body>a[href='#course-editor']{display:block;margin-top:12px;font-size:14px;color:var(--color-brand)}
 @media(max-width:767px){.block-workspace{grid-template-columns:minmax(0,1fr)}.course-page .block-candidates{position:static}.block-candidates [data-candidate-list]{max-height:300px}.block-fields{grid-template-columns:minmax(0,1fr)}.block-chain .stop-actions button{padding:8px}.block-totals{gap:16px}.block-place{flex-wrap:wrap}.block-place strong{flex-basis:65%}}
+
+/* CB-PLACE-01: place context accompanies every block, including saved copies. */
+.course-place-overview{background:#fff2ad;border-radius:20px;padding:24px;margin:0 0 28px;overflow-wrap:anywhere}
+.course-place-overview h3{font-size:21px;font-weight:800;margin:0 0 18px}.course-place-overview h3>span{font-size:14px;font-weight:500;margin-left:8px}
+.course-place-overview>div{display:flex;align-items:center;flex-wrap:wrap;gap:12px}.course-place-overview p{margin:0;font-size:14px;color:#655729}
+.course-overview-stop{display:flex;align-items:center;gap:10px;background:white;border:1px solid #e4d88e;border-radius:12px;padding:12px;max-width:100%;min-width:0}.course-overview-stop>b{display:grid;place-items:center;flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#171717;color:white;font-size:13px}.course-overview-stop strong{display:block;font-size:14px}.course-overview-stop small{display:block;font-size:12px;color:#686868;margin-top:3px}.overview-arrow{color:#6f6030}
+.block-place-context{margin:14px 0;padding:14px;background:#f7f5ed;border-radius:12px;font-size:14px;overflow-wrap:anywhere}.block-place-context>div{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.place-kind{background:#fff0a1;color:#4e4011;border-radius:6px;padding:4px 8px;font-size:12px;font-weight:700}.block-place-context p{margin:10px 0!important;font-size:14px!important}.block-place-context [data-place-map]{display:inline-flex;align-items:center;min-height:44px;color:#7a0040;text-decoration:underline;text-underline-offset:3px;font-size:13px}
+[data-candidate-list] .block-place-context{padding:10px;margin:10px 0}.block-candidates .block-place-context small{display:inline}
+@media(max-width:600px){.course-place-overview{padding:18px}.course-place-overview>div{align-items:stretch}.course-overview-stop{width:100%}.overview-arrow{width:100%;text-align:center;transform:rotate(90deg);line-height:12px}.course-place-overview h3{font-size:19px}}

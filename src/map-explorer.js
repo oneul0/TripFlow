@@ -11,7 +11,7 @@ export function mountExplorer(root,{area='1',mapMode='sample',mapKey='',onRegion
  root.innerHTML=`<div class="map-heading"><div><p class="eyebrow">FOLLOW THE GLOW</p><h3>빛나는 곳으로, ${areaName}.</h3><p>여행지가 모인 구역을 눌러 다음 발견을 찾아보세요.</p></div><span class="map-mode">${areaName} ${boundaries.length}개 시군구</span></div>
  <div class="map-layout"><div class="map-stage"><div id="map-surface"></div><div class="map-toolbar"><button id="all-regions" type="button">${areaName} 전체 ↖</button><button id="scope-search" type="button" hidden>이 지도 범위에서 찾기</button></div><div class="map-legend"><span>적음</span><i></i><span>많음</span><small>조회된 관광정보 개수 · 인기도 아님</small></div></div>
  <aside class="region-panel" aria-label="지역 탐색"><p class="eyebrow">YOUR NEXT NEIGHBORHOOD</p><h4 id="region-title">${areaName}의 작은 발견</h4><p id="region-summary" role="status"></p><div id="map-detail" aria-live="polite">지도 마커나 목록의 지도 버튼을 눌러 장소를 선택하세요.</div><label for="district-select">시군구 선택</label><select id="district-select" class="form-select"><option value="">${areaName} 전체</option></select><div id="district-list" class="district-list"></div></aside></div>
- <div class="map-notice"><span id="map-status" role="status"></span><button id="retry-map" type="button" hidden>지도 재시도</button></div><p class="map-source">경계: KOSTAT 2013 단순화 · southkorea · 전국 시군구 · 최신 행정경계가 아닌 개발 기준 데이터</p>`;
+ <div class="map-notice"><span id="map-status" role="status"></span><button id="retry-map" type="button" hidden>지도 재시도</button></div><p class="map-source">지도 경계: 2013년 기준</p>`;
  const surface=root.querySelector('#map-surface'),status=root.querySelector('#map-status'),retry=root.querySelector('#retry-map'),scopeButton=root.querySelector('#scope-search'),select=root.querySelector('#district-select');
  const buttons=new Map();
  for(const region of boundaries.slice().sort((a,b)=>a.name.localeCompare(b.name,'ko'))){
@@ -46,7 +46,7 @@ export function mountExplorer(root,{area='1',mapMode='sample',mapKey='',onRegion
   selectedPlace=id;render();const place=analysis.places.find(p=>p.contentId===id);view.focusPlace(place);onPlaceChange?.(id);
  }
  async function connect(){
-  if(mapMode!=='kakao'){status.textContent='샘플 경계 지도 · 합성 데이터로 효과를 미리 봅니다.';return;}
+  if(mapMode!=='kakao'){status.textContent='샘플 지도';return;}
   if(connecting||dead)return;connecting=true;retry.hidden=true;delete status.dataset.failure;status.textContent='카카오 지도를 불러오고 있습니다…';
   try{
    // Load in a separate surface so SDK failure never destroys the usable preview.

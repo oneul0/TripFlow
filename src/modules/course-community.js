@@ -15,7 +15,7 @@ export function createCourseCommunity(storage){
  const own=(data,id,user)=>{const p=data.plans.find(p=>p.id===id&&p.owner===user);if(!p)fail('계획을 찾을 수 없습니다.');return p;};
  const publicCourse=(data,id)=>{const c=data.courses.find(c=>c.id===id&&c.status==='published');if(!c)fail('공개 코스를 찾을 수 없습니다.');return c;};
  const rating=(id,revision)=>{const values=state.reviews.filter(r=>r.courseId===id&&(!revision||r.revisionId===revision)).map(r=>r.rating);return {count:values.length,average:values.length?values.reduce((a,b)=>a+b,0)/values.length:null};};
- const snapshot=p=>({id:crypto.randomUUID(),title:p.title,stops:p.stops.map(({id,title,area,tags,stay,cost,source,contentId,category,incomingMinutes,incomingCost})=>({id,title,area,tags:[...tags],stay,cost,source,contentId,category,incomingMinutes,incomingCost})),number:1});
+ const snapshot=p=>({id:crypto.randomUUID(),title:p.title,stops:p.stops.map(({id,title,area,tags,stay,cost,source,contentId,category,address,incomingMinutes,incomingCost})=>({id,title,area,tags:[...tags],stay,cost,source,contentId,category,address,incomingMinutes,incomingCost})),number:1});
  return {
  plans:user=>clone(state.plans.filter(p=>p.owner===user)),
  list:()=>clone(state.courses.filter(c=>c.status==='published').map(c=>({...c,revision:c.revisions.at(-1),rating:rating(c.id,c.revisions.at(-1).id)}))),

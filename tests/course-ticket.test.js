@@ -1,0 +1,3 @@
+import {it,expect} from 'vitest';
+import {ticketSVG} from '../src/course-ticket.js';
+it('CB-FLOW-04 티켓은 모든 방문지·미확인·샘플을 안전하게 포함한다',()=>{const result=ticketSVG({title:'<script>여행</script>',stops:Array.from({length:30},(_,i)=>({title:'장소'+i+' 긴 이름'.repeat(15),category:'39',source:'sample',stay:null,cost:null}))});expect(result.svg).not.toContain('<script>');expect(result.svg).toContain('&lt;script&gt;');expect(result.svg).toContain('장소29');expect(result.svg).toContain('샘플');expect(result.svg).toContain('미확인');expect(result.height).toBeGreaterThan(3000);expect(result.svg).not.toContain('<image');});

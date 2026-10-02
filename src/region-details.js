@@ -12,12 +12,12 @@ export function mountRegionDetails(root,{tourPreview=createSampleCatalog().previ
  async function loadMap(token){
   map?.destroy();map=null;$('[data-map-retry]').hidden=true;
   const options={key:mapKey,regions:[current],onRegion:()=>{},onPlace:choose,onMove:()=>{}};
-  if(mapMode!=='kakao'){$('[data-map-status]').textContent='경계 미리보기 · 카카오지도는 지도/실연동 모드에서 제공됩니다.';map=createSvgMap(surface,options);map.update(state());return;}
+  if(mapMode!=='kakao'){$('[data-map-status]').textContent='지역 지도';map=createSvgMap(surface,options);map.update(state());return;}
   $('[data-map-status]').textContent='카카오지도를 불러오는 중…';
   // Each initialization owns its host so an obsolete SDK response cannot replace a newer map.
   const host=document.createElement('div');host.className='random-kakao-host';surface.replaceChildren(host);
   try{const next=await mapFactory(host,options);if(dead||token!==revision){next.destroy();return;}map=next;map.update(state());$('[data-map-status]').textContent='카카오지도 · 선택 지역 경계와 관광지 마커';}
-  catch{if(dead||token!==revision)return;$('[data-map-status]').textContent='카카오지도를 불러오지 못했습니다. 공개 JavaScript 키와 도메인 설정을 확인해주세요.';$('[data-map-retry]').hidden=false;map=createSvgMap(surface,options);map.update(state());}
+  catch{if(dead||token!==revision)return;$('[data-map-status]').textContent='지도를 불러오지 못했습니다. 잠시 후 다시 시도해주세요.';$('[data-map-retry]').hidden=false;map=createSvgMap(surface,options);map.update(state());}
  }
  async function loadPlaces(token){
   controller?.abort();controller=new AbortController();$('[data-tour-list]').replaceChildren();$('[data-tour-retry]').hidden=true;$('[data-tour-status]').textContent='관광정보를 불러오는 중…';

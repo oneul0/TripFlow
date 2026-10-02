@@ -69,3 +69,23 @@ RND-17: tests/random-trip-ui.test.js의 포인터 이동량/잡기 오프셋/취
 RND-18: tests/random-upgrade.test.js — 비행 투영 크기의 연속 감소/착지 지름 절반 이하/시작 공 위치 검증. 기존 포인터 집기와 발사 E2E 유지.
 
 BRAND-01: tests/branding.test.js — TripFlow 이미지 대체 텍스트·화면 서비스명·제목·회원가입 안내 검증. 기존 e2e/app.spec.js의360/768/1440px 흐름과 전체 harness115 단위·DOM/32 E2E/빌드, rules:check15 통과.
+
+UX-COPY-01: tests/service-copy.test.js에서 금지된 개발 안내 문구 부재를 검증합니다. 기존 탐색·회원·코스·게시판 E2E를 유지하며 변경한 샘플 배지/공개 확인 문구/지역 안내 기대값을 새 명세에 맞췄습니다.
+
+| EDIT-01~04 | 홈 최신 글·빈 결과·오류 재시도, 게시글 사진 없음, 상세 포커스, 지도 패널 위치·360/768/1440px 넘침 | tests/home-editorial.test.js, e2e/editorial-design.spec.js |
+
+| MAP-INIT-01 | 숨김→표시 경계 맞춤, 화면 크기 변경 중심 유지, 숨김 중 지역 선택 | tests/maps.test.js |
+
+| RND-STYLE-01 | 아케이드 반응형·공 집기/스핀/원근·후보 저장 | e2e/random-trip.spec.js, e2e/random-upgrade.spec.js, e2e/navigation.spec.js 및 화면 확인 |
+
+| RND-SPIN-01 | 회전 관성·감쇠·방향·프레임 독립성·잡기 효과·취소·모션 감소 | tests/spin-inertia.test.js, e2e/random-upgrade.spec.js |
+
+| CLUB-01 | 전 페이지 테마·360/768/1440 주요 흐름·접근성·기존 게임 동작 | e2e/editorial-design.spec.js, e2e/navigation.spec.js, e2e/board-integration.spec.js, e2e/course-sharing.spec.js, e2e/random-upgrade.spec.js |
+
+| RND-ZOOM-01 | 지역 내 축소·상위 복귀·전국 최소 배율·후보 보존 | e2e/random-upgrade.spec.js |
+
+| CB-PLACE-01 | 장소 메타정보·주소 보존·공유/복사·빈 정보·안전한 출력·요약 동기화·반응형 | tests/course-place-context.test.js, e2e/course-sharing.spec.js |
+
+| CB-FLOW-01~04 | 통합 후보 선택·블록 구성·생성·PNG 티켓 | tests/course-ticket.test.js, e2e/course-workflow.spec.js, e2e/course-sharing.spec.js |
+
+| CB-TICKET-01 | 항공권형 티켓과 기존 내용 보존 | tests/course-ticket.test.js, e2e/course-workflow.spec.js |
