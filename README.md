@@ -1,0 +1,70 @@
+# EnjoyTrip
+
+HTML·CSS·JavaScript·Bootstrap으로 구현한 국내 여행 탐색 프론트엔드. 하나의 앱과 빌드로 유지하는 모듈형 모놀리식이며 관광 데이터·검색·로그·AI 제공자를 함수 계약으로 교체한다.
+
+작업 시작 전 [필수 프로젝트 규칙](AGENTS.md)을 읽는다. 규칙 일부의 자동 검증은 `npm run rules:check`, 전체 검증은 `npm run harness`로 실행한다.
+
+## 실행
+
+Node.js 22.12 이상 또는 24 LTS를 사용한다.
+
+```powershell
+npm ci
+npm run dev
+```
+
+http://127.0.0.1:5173 에 접속한다.
+
+민감정보 도입 전 검증은 `npm run harness`로 실행한다. 기본 실행과 빌드는 샘플 모드이며 외부 API 설정을 노출하지 않는다. [하네스 실행 경계](docs/harness.md)를 참고한다.
+
+```powershell
+npm test
+npm run test:e2e
+npm run build
+npm run preview
+```
+
+브라우저 테스트는 설치된 Microsoft Edge를 사용한다. 다른 환경에서는 `playwright.config.js`의 channel을 변경하고 필요한 Playwright 브라우저를 설치한다.
+
+## 구현 상태
+
+| 요구사항 | 상태 |
+| --- | --- |
+| F101 | 샘플 조회 및 TourAPI 어댑터 구현. 인증키를 사용한 실 API 연동 검증은 미완료 |
+| F102 F103 | 지역·콘텐츠 유형·키워드 검색, 로딩·빈 결과·오류·이전 요청 취소 구현 |
+| F107 | 로컬 데모 가입·본인 조회·이름 수정·비밀번호 재확인 탈퇴 구현 |
+| F108 | 데모 로그인·로그아웃·복구 코드 비밀번호 재설정 구현 |
+| NF101~NF104 | 접근성 기본, 반응형, 상태 안내, 데이터 모드 구분 적용. 실데이터 정확성은 연동 후 검증 |
+| F104~F106 F109~F114 | 후속 선택 기능, 현재 미구현 |
+
+샘플 목록은 직접 작성한 테스트 데이터로 실제 장소 운영정보가 아니다. 일부 명칭은 가상이다. 회원은 브라우저 저장소 기반 학습 데모이며 실제 개인정보를 사용하지 않는다. 비밀번호와 복구 코드는 PBKDF2 해시로 저장하지만 사용자가 저장소를 수정할 수 있으므로 실제 인증·인가를 보장하지 않는다. 복구 코드는 가입 성공 화면에서 보관해야 한다. 현재 프로필 수정은 이름만 지원한다.
+
+## 공공데이터 설정
+
+`.env.example`을 `.env`로 복사하고 디코딩된 키를 `VITE_TOUR_API_KEY`에 설정한 후 `npm run dev:live`로 실행한다. 키가 있어도 일반 `npm run dev`는 샘플을 유지한다. live 모드는 지정한 관광 API 키와 주소를 브라우저에 공개하므로 서버 전용 비밀키를 넣지 않는다. 발급받은 계정의 실제 지원 URL, 지역·유형 코드와 CORS를 확인하고 필요하면 `VITE_TOUR_API_BASE_URL`을 수정한다.
+
+어댑터 기본 주소는 KorService2/areaBasedList2이며 실제 키 기반 검증 전이다. 페이지를 순차 조회해 키워드를 로컬 검색하며 최대 10페이지를 넘으면 조건 축소를 안내한다. 전체 전국 조회는 이 제한에 걸릴 수 있으므로 실모드에서는 지역·유형을 좁힌다. 향후 같은 모놀리스의 검색 모듈에서 API 키워드 검색 또는 내부 색인으로 교체할 수 있다.
+
+출처: [한국관광공사 국문 관광정보 서비스](https://www.data.go.kr/data/15101578/openapi.do). AI 추천은 현재 연결하지 않았다.
+
+## 카카오 지도 탐색
+
+`.env`에 공개 JavaScript 키 `VITE_KAKAO_MAP_APP_KEY`를 설정하고 SDK 도메인 `http://127.0.0.1:5173`을 등록한 뒤 `npm run dev:map`으로 실행한다. 카카오 로그인 리다이렉트 URI는 지도 기능에 필요 없다. 지도 전용 모드는 샘플 관광정보를 사용한다. `npm run dev`와 기본 빌드는 키를 주입하지 않는 샘플 경계 지도다.
+
+서울 25개 구 선택, 구역별 밝기와 경계 안 그라디언트, 클러스터·마커와 목록 연동, 지도 범위 필터를 제공한다. 경계는 2013년 개발 기준 데이터이며 전국 집계와 최신 경계는 후속 범위다. [지도 구현·검증](docs/map-explorer.md), [데이터 출처](docs/third-party/seoul-maps.md)를 참고한다.
+
+## 구조와 개발 방식
+
+- `src/app.js`: 단일 조립 지점
+- `src/modules`: 관광·회원 서비스
+- `src/adapters`: 관광 공급자, 검색·로그·AI 제공자, 저장소
+- `src/contracts.js`: 확장 인터페이스 JSDoc
+- `src/ui.js`, `src/tokens.css`, `src/design-system.css`: 반응형 화면과 사용자 흐름
+- `specs`: 수용 기준과 계약, 테스트 추적
+- `tests`, `e2e`: 서비스·DOM·브라우저 테스트
+
+변경은 명세 → 실패 테스트 → 최소 구현 → 리팩터링 순서로 진행한다. [아키텍처](docs/architecture.md), [요구사항](specs/requirements.md), [테스트 매핑](specs/test-matrix.md)을 참고한다. 실제 AI·중앙 로그·검색 엔진은 동일 애플리케이션 서버 내부 모듈로 구현하는 후속 범위다.
+
+code-review-graph는 `.tools/crg`의 로컬 도구이며 커밋하지 않는다. `.code-review-graphignore`로 의존성과 빌드 결과를 제외한다. 기존 CodeGraph와 별도 도구다. 현재 Git 저장소가 없어 증분 변경 발견과 diff 리뷰가 제한되므로 Git 초기화 전에는 `build --repo .`로 갱신한다.
+
+검증한 화면 캡처는 `docs/screenshots/home-1440.png`, `docs/screenshots/home-360.png`에 저장되어 있다. 개발 서버 실행 중 `node scripts/capture.mjs`로 다시 생성한다. 기본 여행 이미지는 AI로 생성한 분위기 예시로 실제 관광지 사진이 아니며 각 이미지에 표시한다. API 사진이 정상 로드되면 실제 사진을 우선 표시한다.

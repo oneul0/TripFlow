@@ -1,0 +1,12 @@
+# Added by code-review-graph
+.code-review-graph/
+.tools/
+tmp/
+node_modules/
+coverage/
+test-results/
+playwright-report/
+.env
+.env.*
+!.env.example
+dist/
